@@ -1,5 +1,6 @@
 import pygame
 from random import choice, randint
+from math import sqrt, asin, pi
 
 
 goblin_l = pygame.image.load('goblin_l.png')
@@ -16,6 +17,11 @@ wall_hor = pygame.image.load('wall_hor.png')
 wall_hor.set_colorkey((255, 255, 255))
 wall_ver = pygame.image.load('wall_ver.png')
 wall_ver.set_colorkey((255, 255, 255))
+rifle_l = pygame.image.load('rifle_l.png')
+rifle_l.set_colorkey((24, 29, 35))
+rifle_r = pygame.image.load('rifle_r.png')
+rifle_r.set_colorkey((24, 29, 35))
+
 
 
 
@@ -72,7 +78,12 @@ class Hero:
         self.x = 600
         self.y = 600
         self.nx = 1
+        self.weapons = [[rifle_r, rifle_l]]
+        self.curr_weapon = self.weapons[0]
+        self.target_x = 0
+        self.target_y = 0
         self.draw()
+        self.angle = 0
 
     def move(self, m_x, m_y):
         if self.x + m_x <= 10:
@@ -92,15 +103,56 @@ class Hero:
         self.draw()
         
     def draw(self):
-        if self.nx == -1:
-            g_l_r = hero_l.get_rect(
-                topleft=(self.x, self.y))
-            screen.blit(hero_l, g_l_r)
+        for num, i in enumerate(npc):
+            x, y = i.x, i.y
+            if num == 0:
+                self.target_x, self.target_y = x, y
+            if sqrt((self.x - x) ** 2 + (self.y - y) ** 2) < sqrt((self.x - self.target_x) ** 2 + (self.y - self.target_y) ** 2):
+                self.target_x, self.target_y = x, y
+            self.angle = int(asin((self.target_y - self.y) / sqrt((self.x - self.target_x) ** 2 + (self.y - self.target_y) ** 2)) / pi * 180)
+
+        if len(npc) == 0:
+            if self.nx == -1:
+                g_l_r = hero_l.get_rect(
+                    topleft=(self.x, self.y))
+                screen.blit(hero_l, g_l_r)
+                g_l_r = self.curr_weapon[1].get_rect(
+                    topleft=(self.x + 22, self.y + 42))
+                rot_image = pygame.transform.rotate(self.curr_weapon[1], 0)
+                rot_rect = rot_image.get_rect(center=g_l_r.center)
+                rot_image.set_colorkey((24, 29, 35))
+                screen.blit(rot_image, rot_rect)
+            else:
+                g_l_r = hero_r.get_rect(
+                    topleft=(self.x, self.y))
+                screen.blit(hero_r, g_l_r)
+                g_l_r = self.curr_weapon[0].get_rect(
+                    topleft=(self.x + 22, self.y + 42))
+                rot_image = pygame.transform.rotate(self.curr_weapon[0], 0)
+                rot_rect = rot_image.get_rect(center=g_l_r.center)
+                rot_image.set_colorkey((24, 29, 35))
+                screen.blit(rot_image, rot_rect)
         else:
-            g_l_r = hero_r.get_rect(
-                topleft=(self.x, self.y))
-            screen.blit(hero_r, g_l_r)
-        
+            if self.target_x < self.x:
+                g_l_r = hero_l.get_rect(
+                    topleft=(self.x, self.y))
+                screen.blit(hero_l, g_l_r)
+                g_l_r = self.curr_weapon[1].get_rect(
+                    topleft=(self.x + 22, self.y + 42))
+                rot_image = pygame.transform.rotate(self.curr_weapon[1], int(1 * self.angle))
+                rot_rect = rot_image.get_rect(center=g_l_r.center)
+                rot_image.set_colorkey((24, 29, 35))
+                screen.blit(rot_image, rot_rect)
+            else:
+                g_l_r = hero_r.get_rect(
+                    topleft=(self.x, self.y))
+                screen.blit(hero_r, g_l_r)
+                g_l_r = self.curr_weapon[0].get_rect(
+                    topleft=(self.x + 22, self.y + 42))
+                rot_image = pygame.transform.rotate(self.curr_weapon[0], int(-1 * self.angle))
+                rot_rect = rot_image.get_rect(center=g_l_r.center)
+                rot_image.set_colorkey((24, 29, 35))
+                screen.blit(rot_image, rot_rect)
 
 if __name__ == '__main__':
     pygame.init()
