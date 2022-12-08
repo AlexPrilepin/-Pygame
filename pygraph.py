@@ -23,9 +23,11 @@ rifle_r = pygame.image.load('rifle_r.png')
 rifle_r.set_colorkey((24, 29, 35))
 bullet = pygame.image.load('bullet.png')
 bullet.set_colorkey((255, 255, 255))
+courpse = pygame.image.load('courpse_1.png')
+courpse.set_colorkey((255, 255, 255))
 
 aim = True
-
+courpses = []
 
 class Nepice:
     def __init__(self, x, y):
@@ -38,7 +40,10 @@ class Nepice:
         self.hp = 0
 
     def get_damage(self, amount):
+        global courpses
         self.hp -= amount
+        courpses.append((self.x, self.y))
+        
             
     
     def move(self):
@@ -293,14 +298,19 @@ if __name__ == '__main__':
         g_l_r3 = wall_ver.get_rect(
                 topleft=(1165, 3))
         screen.blit(wall_ver, g_l_r3)
+        for i in courpses:
+            g_l_r2 = courpse.get_rect(
+                topleft=(i[0], i[1]))
+            screen.blit(courpse, g_l_r2)
+        hero.draw()
         for num, x in enumerate(npc):
             x.move()
             if x.hp <= 0:
                 del npc[num]
-        hero.draw()
         for num, i in enumerate(bullets):
             if i.draw() is True:
                 del bullets[num]
+        
         if waves_count == waves and len(npc) == 0 and win >= 0 and win < 60:
             win += 1
             n = pygame.font.Font(None, 120)
@@ -310,6 +320,7 @@ if __name__ == '__main__':
             n = pygame.font.Font(None, 120)
             t = n.render(f'Wave {waves_count + 1}: ', True, (255, 0, 0))
             screen.blit(t, (450, 400))
+        
         clock.tick(fps)
         pygame.display.flip()
     pygame.quit()
