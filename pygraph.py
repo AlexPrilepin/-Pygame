@@ -35,18 +35,17 @@ class Nepice:
         self.ny = choice([-1, 1])
         self.y = y
         self.x = x
-        self.draw()
-        self.move()
-        self.hp = 0
+        self.hp = 10
 
     def get_damage(self, amount):
         global courpses
         self.hp -= amount
-        courpses.append((self.x, self.y))
+        if self.hp <= 0:
+            courpses.append((self.x, self.y))
         
             
     
-    def move(self):
+    def move(self, hp):
         self.x += self.nx * v / fps
         self.y += self.ny * v / fps
         if self.x <= 30:
@@ -57,7 +56,7 @@ class Nepice:
             self.nx *= -1
         if self.y > height - 120:
             self.ny *= -1
-        self.draw()
+        self.draw(hp)
         
     def draw(self):
         pass
@@ -68,8 +67,8 @@ class Goblin(Nepice):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.hp = 12
-
-    def draw(self):
+        
+    def draw(self, hp):
         if self.nx == -1:
             g_l_r = goblin_l.get_rect(
                 topleft=(self.x, self.y))
@@ -78,9 +77,9 @@ class Goblin(Nepice):
             g_l_r = goblin_r.get_rect(
                 topleft=(self.x, self.y))
             screen.blit(goblin_r, g_l_r)
-
+        pygame.draw.rect(screen, (0, 0, 0), (self.x - 2, self.y - 12, 72, 12), 4)
+        pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y - 10, int(70 * hp / 12), 10))
         
-
             
 npc = []
 bullets = []
@@ -92,8 +91,7 @@ class Hero_bullet:
         self.start_y = start_y
         self.end_x = end_x
         self.end_y = end_y
-##        CHANGE TO 3!!!        
-        self.damage = 1000
+        self.damage = 4
         self.x, self.y = self.start_x, self.start_y
         self.angle = int(asin((self.start_y - self.end_y) / sqrt((self.end_x - self.start_x) ** 2 + (self.end_y - self.start_y) ** 2)) / pi * 180)
 
@@ -247,10 +245,10 @@ if __name__ == '__main__':
             if event.type == pygame.MOUSEMOTION:
                 if not aim:
                     s_x, s_y = event.pos
-                    hero.target(s_x, s_y)
+                    hero.target(s_x - 50, s_y - 50)
             if event.type == pygame.MOUSEBUTTONUP:
                 s_x, s_y = event.pos
-                hero.shoot(s_x, s_y)
+                hero.shoot(s_x - 50, s_y - 50)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a] == True and keys[pygame.K_s] == True:
                 hero.move(-10, 10)
@@ -304,7 +302,7 @@ if __name__ == '__main__':
             screen.blit(courpse, g_l_r2)
         hero.draw()
         for num, x in enumerate(npc):
-            x.move()
+            x.move(x.hp)
             if x.hp <= 0:
                 del npc[num]
         for num, i in enumerate(bullets):
