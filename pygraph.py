@@ -23,6 +23,8 @@ rifle_r = pygame.image.load('rifle_r.png')
 rifle_r.set_colorkey((24, 29, 35))
 bullet = pygame.image.load('bullet.png')
 bullet.set_colorkey((255, 255, 255))
+npc_bullet = pygame.image.load('npc_bullet.png')
+npc_bullet.set_colorkey((0, 0, 0))
 courpse = pygame.image.load('courpse_1.png')
 courpse.set_colorkey((255, 255, 255))
 
@@ -36,6 +38,8 @@ class Nepice:
         self.y = y
         self.x = x
         self.hp = 10
+        self.damage = 1
+        self.cd = 90
 
     def get_damage(self, amount):
         global courpses
@@ -61,6 +65,11 @@ class Nepice:
     def draw(self):
         pass
 
+    def attack(self):
+        aim_x, aim_y = hero.x, hero.y
+        bullets.append(NPC_bullet(self.x, self.y, aim_x, aim_y))
+        
+
 
 
 class Goblin(Nepice):
@@ -83,6 +92,42 @@ class Goblin(Nepice):
             
 npc = []
 bullets = []
+npc_bullets = []
+
+
+
+class NPC_bullet:
+    def __init__(self, start_x, start_y, end_x, end_y):
+        self.start_x = start_x
+        self.start_y = start_y
+        self.end_x = end_x
+        self.end_y = end_y
+        self.damage = 1
+        self.x, self.y = self.start_x, self.start_y
+        self.angle = int(asin((self.start_y - self.end_y) / sqrt((self.end_x - self.start_x) ** 2 + (self.end_y - self.start_y) ** 2)) / pi * 180)
+
+    def draw(self):
+        if self.start_x < self.end_x:
+            self.x += 16 * abs(cos(self.angle * pi / 180))
+        else:
+            self.x -= 16 * abs(cos(self.angle * pi / 180))
+        if self.start_y < self.end_y:
+            self.y += 16 * abs(sin(self.angle * pi / 180))
+        else:
+            self.y -= 16 * abs(sin(self.angle * pi / 180))
+        if self.x < 30 or self.x > 1112 or self.y < 30 or self.y > 680:
+            pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
+            return True
+        
+        if int(self.x + 30) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 50) in list(range(int(hero.y), int(hero.y + 50))):
+            hero.get_damage(self.damage)
+            pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
+            return True
+        g_l_r = npc_bullet.get_rect(
+            topleft=(self.x + 35, self.y + 50))
+        screen.blit(npc_bullet, g_l_r)
+        return False
+
 
 
 class Hero_bullet:
@@ -129,6 +174,9 @@ class Hero:
         self.target_y = 600
         self.draw()
         self.angle = 0
+
+    def get_damage(self, num):
+        pass
 
     def move(self, m_x, m_y):
         if self.x + m_x <= 10:
@@ -216,6 +264,7 @@ class Hero:
                 screen.blit(rot_image, rot_rect)
 
 if __name__ == '__main__':
+    npc_shoot = 0
     pygame.init()
     pygame.display.set_caption('Движущийся круг 2')
     size = width, height = 1200, 800
@@ -233,6 +282,7 @@ if __name__ == '__main__':
     freeze_waves = 0
     win = 0
     while running:
+        npc_shoot += 1
         screen.fill((0, 0, 0))
         for a in range(1):
             for b in range(1):
@@ -280,10 +330,13 @@ if __name__ == '__main__':
             else:
                 freeze_waves += 1
                 writing = True
+                npc_shoot = 1
                 
         else:
             freeze_waves = 0
             writing = False
+
+        
         g_l_r = wall_hor.get_rect(
                 topleft=(0, 0))
         screen.blit(wall_hor, g_l_r)
@@ -305,9 +358,15 @@ if __name__ == '__main__':
             x.move(x.hp)
             if x.hp <= 0:
                 del npc[num]
+            if npc_shoot % x.cd  == 0:
+                x.attack()
         for num, i in enumerate(bullets):
             if i.draw() is True:
                 del bullets[num]
+        for num, i in enumerate(npc_bullets):
+            if i.draw() is True:
+                del npc_bullets[num]
+        
         
         if waves_count == waves and len(npc) == 0 and win >= 0 and win < 60:
             win += 1
