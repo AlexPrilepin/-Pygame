@@ -37,7 +37,7 @@ hc = pygame.image.load('hero_dead.png')
 hc.set_colorkey((255, 255, 255))
 
 aim = True
-GG = False
+GG_1, GG_2 = False, False
 courpses = []
 
 class Nepice:
@@ -48,7 +48,7 @@ class Nepice:
         self.x = x
         self.hp = 10
         self.damage = 1
-        self.cd = 50
+        self.cd = randint(45, 55)
 
     def get_damage(self, amount):
         global courpses
@@ -76,7 +76,10 @@ class Nepice:
         pass
 
     def attack(self):
-        aim_x, aim_y = hero.x, hero.y
+        if (sqrt((hero_2.x - self.x) ** 2 + (hero_2.y - self.y) ** 2) <= sqrt((hero.x - self.x) ** 2 + (hero.y - self.y) ** 2) and hero_2.hp > 0) or hero.hp <= 0:
+            aim_x, aim_y = hero_2.x, hero_2.y
+        else:
+            aim_x, aim_y = hero.x, hero.y
         bullets.append(NPC_bullet(self.x, self.y, aim_x, aim_y))
         
 
@@ -128,8 +131,11 @@ class NPC_bullet:
         if self.x < 30 or self.x > 1112 or self.y < 30 or self.y > 680:
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
-        
-        if int(self.x + 30) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 50) in list(range(int(hero.y), int(hero.y + 50))):
+        if int(self.x + 30) in list(range(int(hero_2.x), int(hero_2.x + 70))) and int(self.y + 50) in list(range(int(hero_2.y), int(hero_2.y + 50))):
+            hero_2.get_damage(self.damage)
+            pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
+            return True
+        elif int(self.x + 30) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 50) in list(range(int(hero.y), int(hero.y + 50))):
             hero.get_damage(self.damage)
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
@@ -178,32 +184,39 @@ class Hero_bullet:
 
 class Hero:
     def __init__(self, typer):
-        self.x = 600
+        self.x = typer * 350
         self.y = 600
         self.nx = 1
+        self.tp = typer
         self.weapons = [[rifle_r, rifle_l]]
         self.curr_weapon = self.weapons[0]
         self.target_x = 1000
         self.target_y = 600
-        self.draw()
         self.angle = 0
         self.hp = 10
         self.total = 10
         self.cd = 0
         if typer == 1:
-            typer_r = hero_r
-            typer_l = hero_r
+            self.typer_r = hero_r
+            self.typer_l = hero_l
         else:
-            typer_r = other_hero_r
-            typer_l = other_hero_r
+            self.typer_r = other_hero_r
+            self.typer_l = other_hero_l
+        self.draw()
+            
 
     def get_damage(self, num):
-        global GG
+        global GG_1, GG_2
         self.hp -= num
         if self.hp <= 0:
-            GG = True
+            if self.tp == 1:
+                GG_1 = True
+            else:
+                GG_2 = True
 
     def move(self, m_x, m_y):
+        if ((GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2)):
+            return
         if self.x + m_x <= 10:
             return
         if self.y + m_y <= 40:
@@ -218,16 +231,15 @@ class Hero:
             self.nx = -1
         elif m_x > 0:
             self.nx = 1
-        self.draw()
 
     def target(self, x, y):
         self.target_x = x
         self.target_y = y
     
-    def shoot(self, s_x, s_y):
+    def shoot(self, s_x=0, s_y=0):
         global bullets
-        if self.cd == 0:
-            if aim:
+        if self.cd == 0  and not ((GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2)):
+            if aim or self.tp == 2:
                 bull = Hero_bullet(self.x, self.y, self.target_x, self.target_y)
             else:
                 bull = Hero_bullet(self.x, self.y, s_x, s_y)
@@ -235,7 +247,7 @@ class Hero:
             self.cd = 10
         
     def draw(self):
-        if aim:
+        if aim or self.tp == 2:
             for num, i in enumerate(npc):
                 x, y = i.x, i.y
                 if num == 0:
@@ -249,46 +261,46 @@ class Hero:
         if len(npc) == 0 and aim:
             self.target_x, self.target_y = self.nx * 1000, self.y
             if self.nx == -1:
-                g_l_r = hero_l.get_rect(
+                g_l_r = self.typer_l.get_rect(
                     topleft=(self.x, self.y))
-                screen.blit(hero_l, g_l_r)
-                if not GG:
+                screen.blit(self.typer_l, g_l_r)
+                if not ((GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2)):
                     g_l_r = self.curr_weapon[1].get_rect(
-                        topleft=(self.x + 22, self.y + 42))
+                        topleft=(self.x + 22 - (self.tp - 1) * 5, self.y + 42 - (self.tp - 1) * 5))
                     rot_image = pygame.transform.rotate(self.curr_weapon[1], 0)
                     rot_rect = rot_image.get_rect(center=g_l_r.center)
                     rot_image.set_colorkey((24, 29, 35))
                     screen.blit(rot_image, rot_rect)
             else:
-                g_l_r = hero_r.get_rect(
+                g_l_r = self.typer_r.get_rect(
                     topleft=(self.x, self.y))
-                screen.blit(hero_r, g_l_r)
-                if not GG:
+                screen.blit(self.typer_r, g_l_r)
+                if not ((GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2)):
                     g_l_r = self.curr_weapon[0].get_rect(
-                        topleft=(self.x + 22, self.y + 42))
+                        topleft=(self.x + 22 - (self.tp - 1) * 5, self.y + 42 - (self.tp - 1) * 5))
                     rot_image = pygame.transform.rotate(self.curr_weapon[0], 0)
                     rot_rect = rot_image.get_rect(center=g_l_r.center)
                     rot_image.set_colorkey((24, 29, 35))
                     screen.blit(rot_image, rot_rect)
         else:
             if self.target_x < self.x:
-                g_l_r = hero_l.get_rect(
+                g_l_r = self.typer_l.get_rect(
                     topleft=(self.x, self.y))
-                screen.blit(hero_l, g_l_r)
-                if not GG:
+                screen.blit(self.typer_l, g_l_r)
+                if not ((GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2)):
                     g_l_r = self.curr_weapon[1].get_rect(
-                        topleft=(self.x + 22, self.y + 42))
+                        topleft=(self.x + 22 - (self.tp - 1) * 5, self.y + 42 - (self.tp - 1) * 5))
                     rot_image = pygame.transform.rotate(self.curr_weapon[1], int(1 * self.angle))
                     rot_rect = rot_image.get_rect(center=g_l_r.center)
                     rot_image.set_colorkey((24, 29, 35))
                     screen.blit(rot_image, rot_rect)
             else:
-                g_l_r = hero_r.get_rect(
+                g_l_r = self.typer_r.get_rect(
                     topleft=(self.x, self.y))
-                screen.blit(hero_r, g_l_r)
-                if not GG:
+                screen.blit(self.typer_r, g_l_r)
+                if not (GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2):
                     g_l_r = self.curr_weapon[0].get_rect(
-                        topleft=(self.x + 22, self.y + 42))
+                        topleft=(self.x + 22 - (self.tp - 1) * 5, self.y + 42 - (self.tp - 1) * 5))
                     rot_image = pygame.transform.rotate(self.curr_weapon[0], int(-1 * self.angle))
                     rot_rect = rot_image.get_rect(center=g_l_r.center)
                     rot_image.set_colorkey((24, 29, 35))
@@ -313,7 +325,7 @@ if __name__ == '__main__':
     waves = 3
     freeze_waves = 0
     win = 0
-    GG = False
+    GG_1, GG_2 = False, False
     pygame.mixer.music.load('grobik.mp3')
     ccc = 0
     hero_2.cd = cd = 0
@@ -322,7 +334,7 @@ if __name__ == '__main__':
             hero.cd -= 1
         if hero_2.cd > 0:
             hero_2.cd -= 1
-        if not GG:
+        if not (GG_1 and GG_2):
             npc_shoot += 1
         screen.fill((0, 0, 0))
         for a in range(1):
@@ -333,7 +345,7 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if not GG:
+            if not (GG_1 and GG_2):
                 if event.type == pygame.MOUSEMOTION:
                     if not aim:
                         s_x, s_y = event.pos
@@ -342,38 +354,40 @@ if __name__ == '__main__':
                     s_x, s_y = event.pos
                     hero.shoot(s_x - 50, s_y - 50)
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_a] == True and keys[pygame.K_s] == True:
-                    hero.move(-10, 10)
+                if keys[pygame.K_SPACE] == True:
+                    hero_2.shoot()
+                elif keys[pygame.K_a] == True and keys[pygame.K_s] == True:
+                    hero_2.move(-15, 15)
                 elif keys[pygame.K_d] == True and keys[pygame.K_s] == True:
-                    hero.move(10, 10)
+                    hero_2.move(15, 15)
                 elif keys[pygame.K_a] == True and keys[pygame.K_w] == True:
-                    hero.move(-10, -10)
+                    hero_2.move(-15, -15)
                 elif keys[pygame.K_d] == True and keys[pygame.K_w] == True:
-                    hero.move(10, -10)
+                    hero_2.move(15, -15)
                 elif keys[pygame.K_a] == True:
-                    hero.move(-10, 0)
+                    hero_2.move(-15, 0)
                 elif keys[pygame.K_d] == True:
-                    hero.move(10, 0)
+                    hero_2.move(15, 0)
                 elif keys[pygame.K_s] == True:
-                    hero.move(0, 10)
+                    hero_2.move(0, 15)
                 elif keys[pygame.K_w] == True:
-                    hero.move(0, -10)
+                    hero_2.move(0, -15)
                 if keys[pygame.K_LEFT] == True and keys[pygame.K_DOWN] == True:
-                    hero_2.move(-10, 10)
+                    hero.move(-15, 10)
                 elif keys[pygame.K_RIGHT] == True and keys[pygame.K_DOWN] == True:
-                    hero_2.move(10, 10)
+                    hero.move(15, 15)
                 elif keys[pygame.K_LEFT] == True and keys[pygame.K_UP] == True:
-                    hero_2.move(-10, -10)
+                    hero.move(-15, -15)
                 elif keys[pygame.K_RIGHT] == True and keys[pygame.K_UP] == True:
-                    hero_2.move(10, -10)
+                    hero.move(15, -15)
                 elif keys[pygame.K_LEFT] == True:
-                    hero_2.move(-10, 0)
+                    hero.move(-15, 0)
                 elif keys[pygame.K_RIGHT] == True:
-                    hero_2.move(10, 0)
+                    hero.move(15, 0)
                 elif keys[pygame.K_DOWN] == True:
-                    hero_2.move(0, 10)
+                    hero.move(0, 15)
                 elif keys[pygame.K_UP] == True:
-                    hero_2.move(0, -10)
+                    hero.move(0, -15)
                 if keys[pygame.K_q] == True:
                     aim = not aim
         if len(npc) == 0 and waves_count < waves:
@@ -415,23 +429,32 @@ if __name__ == '__main__':
         hero_2.draw()
         pygame.draw.rect(screen, (0, 0, 0), (0, 800, 1200, 100))
         g_l_r1 = hp_bar.get_rect(
-                topleft=(400, 810))
+                topleft=(100, 810))
         screen.blit(hp_bar, g_l_r1)
-        pygame.draw.rect(screen, (255, 0, 0), (474, 830, int(230 * (hero.hp / hero.total)), 34))
+        g_l_r1 = hero_r.get_rect(
+                topleft=(10, 810))
+        screen.blit(hero_r, g_l_r1)
+        pygame.draw.rect(screen, (255, 0, 0), (174, 830, int(230 * (hero.hp / hero.total)), 34))
+        g_l_r1 = hp_bar.get_rect(
+                topleft=(600, 810))
+        screen.blit(hp_bar, g_l_r1)
+        g_l_r1 = other_hero_r.get_rect(
+                topleft=(510, 810))
+        screen.blit(other_hero_r, g_l_r1)
+        pygame.draw.rect(screen, (255, 0, 0), (674, 830, int(230 * (hero_2.hp / hero.total)), 34))
         for num, x in enumerate(npc):
-            x.move(x.hp, GG)
-            if not GG:
+            x.move(x.hp, (GG_1 and GG_2))
+            if not (GG_1 and GG_2):
                 if x.hp <= 0:
                     del npc[num]
                 if npc_shoot % x.cd  == 0:
                     x.attack()
-        if not GG:
-            for num, i in enumerate(bullets):
-                if i.draw() is True:
-                    del bullets[num]
-            for num, i in enumerate(npc_bullets):
-                if i.draw() is True:
-                    del npc_bullets[num]
+        for num, i in enumerate(bullets):
+            if i.draw() is True:
+                del bullets[num]
+        for num, i in enumerate(npc_bullets):
+            if i.draw() is True:
+                del npc_bullets[num]
         
         
         if waves_count == waves and len(npc) == 0 and win >= 0 and win < 60:
@@ -443,15 +466,18 @@ if __name__ == '__main__':
             n = pygame.font.Font(None, 120)
             t = n.render(f'Wave {waves_count + 1}: ', True, (255, 0, 0))
             screen.blit(t, (450, 400))
-        if GG:
-            hero_l, hero_r = hc, hc
+        if GG_1 and GG_2:
+            hero_2.typer_l, hero_2.typer_r, hero.typer_l, hero.typer_r = hc, hc, hc, hc
             n = pygame.font.Font(None, 240)
             t = n.render(f'YOU LOSE !!!', True, (255, 50, 50))
             screen.blit(t, (80, 300))
             if ccc == 0:
                 pygame.mixer.music.play()
                 ccc += 1
-        
+        elif GG_1:
+            hero.typer_l, hero.typer_r = hc, hc
+        elif GG_2:
+            hero_2.typer_l, hero_2.typer_r = hc, hc
         clock.tick(fps)
         pygame.display.flip()
     pygame.quit()
