@@ -11,6 +11,10 @@ hero_l = pygame.image.load('not_bandit.png')
 hero_l.set_colorkey((255, 255, 255))
 hero_r = pygame.image.load('bandit.png')
 hero_r.set_colorkey((255, 255, 255))
+other_hero_l = pygame.image.load('other_hero_l.png')
+other_hero_l.set_colorkey((255, 255, 255))
+other_hero_r = pygame.image.load('other_hero_r.png')
+other_hero_r.set_colorkey((255, 255, 255))
 pol = pygame.image.load('pol.png')
 pol.set_colorkey((255, 255, 255))
 wall_hor = pygame.image.load('wall_hor.png')
@@ -173,7 +177,7 @@ class Hero_bullet:
                     
 
 class Hero:
-    def __init__(self):
+    def __init__(self, typer):
         self.x = 600
         self.y = 600
         self.nx = 1
@@ -186,6 +190,12 @@ class Hero:
         self.hp = 10
         self.total = 10
         self.cd = 0
+        if typer == 1:
+            typer_r = hero_r
+            typer_l = hero_r
+        else:
+            typer_r = other_hero_r
+            typer_l = other_hero_r
 
     def get_damage(self, num):
         global GG
@@ -297,7 +307,8 @@ if __name__ == '__main__':
     v = 100  
     clock = pygame.time.Clock()
     fps = 60
-    hero = Hero()
+    hero = Hero(1)
+    hero_2 = Hero(2)
     waves_count = 0
     waves = 3
     freeze_waves = 0
@@ -305,9 +316,12 @@ if __name__ == '__main__':
     GG = False
     pygame.mixer.music.load('grobik.mp3')
     ccc = 0
+    hero_2.cd = cd = 0
     while running:
         if hero.cd > 0:
             hero.cd -= 1
+        if hero_2.cd > 0:
+            hero_2.cd -= 1
         if not GG:
             npc_shoot += 1
         screen.fill((0, 0, 0))
@@ -344,6 +358,22 @@ if __name__ == '__main__':
                     hero.move(0, 10)
                 elif keys[pygame.K_w] == True:
                     hero.move(0, -10)
+                if keys[pygame.K_LEFT] == True and keys[pygame.K_DOWN] == True:
+                    hero_2.move(-10, 10)
+                elif keys[pygame.K_RIGHT] == True and keys[pygame.K_DOWN] == True:
+                    hero_2.move(10, 10)
+                elif keys[pygame.K_LEFT] == True and keys[pygame.K_UP] == True:
+                    hero_2.move(-10, -10)
+                elif keys[pygame.K_RIGHT] == True and keys[pygame.K_UP] == True:
+                    hero_2.move(10, -10)
+                elif keys[pygame.K_LEFT] == True:
+                    hero_2.move(-10, 0)
+                elif keys[pygame.K_RIGHT] == True:
+                    hero_2.move(10, 0)
+                elif keys[pygame.K_DOWN] == True:
+                    hero_2.move(0, 10)
+                elif keys[pygame.K_UP] == True:
+                    hero_2.move(0, -10)
                 if keys[pygame.K_q] == True:
                     aim = not aim
         if len(npc) == 0 and waves_count < waves:
@@ -382,6 +412,7 @@ if __name__ == '__main__':
                 topleft=(i[0], i[1]))
             screen.blit(courpse, g_l_r2)
         hero.draw()
+        hero_2.draw()
         pygame.draw.rect(screen, (0, 0, 0), (0, 800, 1200, 100))
         g_l_r1 = hp_bar.get_rect(
                 topleft=(400, 810))
