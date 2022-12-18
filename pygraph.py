@@ -35,6 +35,8 @@ hp_bar = pygame.image.load('health_points.png')
 hp_bar.set_colorkey((255, 255, 255))
 hc = pygame.image.load('hero_dead.png')
 hc.set_colorkey((255, 255, 255))
+walkthrough = pygame.image.load('walkthrough.png')
+walkthrough.set_colorkey((255, 255, 255))
 
 aim = True
 GG_1, GG_2 = False, False
@@ -131,11 +133,11 @@ class NPC_bullet:
         if self.x < 30 or self.x > 1112 or self.y < 30 or self.y > 680:
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
-        if int(self.x + 30) in list(range(int(hero_2.x), int(hero_2.x + 70))) and int(self.y + 50) in list(range(int(hero_2.y), int(hero_2.y + 50))):
+        if int(self.x + 30) in list(range(int(hero_2.x), int(hero_2.x + 70))) and int(self.y + 50) in list(range(int(hero_2.y), int(hero_2.y + 50))) and not GG_2:
             hero_2.get_damage(self.damage)
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
-        elif int(self.x + 30) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 50) in list(range(int(hero.y), int(hero.y + 50))):
+        elif int(self.x + 30) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 50) in list(range(int(hero.y), int(hero.y + 50))) and not GG_1:
             hero.get_damage(self.damage)
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
@@ -147,27 +149,31 @@ class NPC_bullet:
 
 
 class Hero_bullet:
-    def __init__(self, start_x, start_y, end_x, end_y):
+    def __init__(self, start_x, start_y, end_x, end_y, damage=4, super_bullet=False):
         self.start_x = start_x
         self.start_y = start_y
         self.end_x = end_x
         self.end_y = end_y
-        self.damage = 4
+        self.damage = damage
         self.x, self.y = self.start_x, self.start_y
+        self.super_bullet = super_bullet
         try:
             self.angle = int(asin((self.start_y - self.end_y) / sqrt((self.end_x - self.start_x) ** 2 + (self.end_y - self.start_y) ** 2)) / pi * 180)
         except ZeroDivisionError:
             self.angle = int(asin((self.start_y - self.end_y) / 0.00000000000000001) / pi * 180)
 
     def draw(self):
+        n = 16
+        if self.super_bullet:
+            n *= 2
         if self.start_x < self.end_x:
-            self.x += 16 * abs(cos(self.angle * pi / 180))
+            self.x += n * abs(cos(self.angle * pi / 180))
         else:
-            self.x -= 16 * abs(cos(self.angle * pi / 180))
+            self.x -= n * abs(cos(self.angle * pi / 180))
         if self.start_y < self.end_y:
-            self.y += 16 * abs(sin(self.angle * pi / 180))
+            self.y += n * abs(sin(self.angle * pi / 180))
         else:
-            self.y -= 16 * abs(sin(self.angle * pi / 180))
+            self.y -= n * abs(sin(self.angle * pi / 180))
         if self.x < 30 or self.x > 1112 or self.y < 30 or self.y > 680:
             pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
             return True
@@ -176,9 +182,16 @@ class Hero_bullet:
                 i.get_damage(self.damage)
                 pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
                 return True
-        g_l_r = bullet.get_rect(
-            topleft=(self.x + 35, self.y + 50))
-        screen.blit(bullet, g_l_r)
+        if not self.super_bullet:
+            g_l_r = bullet.get_rect(
+                topleft=(self.x + 35, self.y + 50))
+            screen.blit(bullet, g_l_r)
+        else:
+            hm = pygame.image.load('super_bullet.png')
+            hm.set_colorkey((255, 255, 255))
+            g_l_r = hm.get_rect(
+                topleft=(self.x + 35, self.y + 50))
+            screen.blit(hm, g_l_r)
         return False
                     
 
@@ -221,7 +234,7 @@ class Hero:
             return
         if self.y + m_y <= 40:
             return
-        if self.x + m_x > 1100 - 100:
+        if self.x + m_x > 1100:
             return
         if self.y + m_y > 800 - 125:
             return
@@ -245,7 +258,48 @@ class Hero:
                 bull = Hero_bullet(self.x, self.y, s_x, s_y)
             bullets.append(bull)
             self.cd = 10
-        
+            
+    def ability(self):
+        global h1_ab, h2_ab
+        if self.tp == 1 and not GG_1:
+            bull = Hero_bullet(self.x, self.y, self.x + 100, self.y)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x - 100, self.y)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x, self.y + 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x, self.y - 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x + 100, self.y + 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x - 100, self.y - 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x - 100, self.y + 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x + 100, self.y - 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x + 50, self.y + 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x - 50, self.y - 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x - 50, self.y + 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x + 50, self.y - 100)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x + 100, self.y + 50)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x - 100, self.y - 50)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x - 100, self.y + 50)
+            bullets.append(bull)
+            bull = Hero_bullet(self.x, self.y, self.x + 100, self.y - 50)
+            bullets.append(bull)
+            h1_ab = 60
+        elif not GG_2:
+            bull = Hero_bullet(self.x, self.y, self.target_x, self.target_y, 40, True)
+            bullets.append(bull)
+            h2_ab = 120
+            
     def draw(self):
         if aim or self.tp == 2:
             for num, i in enumerate(npc):
@@ -329,11 +383,18 @@ if __name__ == '__main__':
     pygame.mixer.music.load('grobik.mp3')
     ccc = 0
     hero_2.cd = cd = 0
+    h1_ab = 60
+    h2_ab = 120
+    room = 2
     while running:
         if hero.cd > 0:
             hero.cd -= 1
         if hero_2.cd > 0:
             hero_2.cd -= 1
+        if h1_ab > 0:
+            h1_ab -= 1
+        if h2_ab > 0:
+            h2_ab -= 1
         if not (GG_1 and GG_2):
             npc_shoot += 1
         screen.fill((0, 0, 0))
@@ -356,7 +417,11 @@ if __name__ == '__main__':
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE] == True:
                     hero_2.shoot()
-                elif keys[pygame.K_a] == True and keys[pygame.K_s] == True:
+                if keys[pygame.K_LSHIFT] == True and h2_ab == 0:
+                    hero_2.ability()
+                if keys[pygame.K_RSHIFT] == True and h1_ab == 0:
+                    hero.ability()
+                if keys[pygame.K_a] == True and keys[pygame.K_s] == True:
                     hero_2.move(-15, 15)
                 elif keys[pygame.K_d] == True and keys[pygame.K_s] == True:
                     hero_2.move(15, 15)
@@ -390,7 +455,7 @@ if __name__ == '__main__':
                     hero.move(0, -15)
                 if keys[pygame.K_q] == True:
                     aim = not aim
-        if len(npc) == 0 and waves_count < waves:
+        if len(npc) == 0 and waves_count < waves and room == 2:
             if freeze_waves >= 90:
                 npc = []
                 for i in range(choice(list(range(3 + waves_count * 2, 10 + waves_count)))):
@@ -404,7 +469,7 @@ if __name__ == '__main__':
                 writing = True
                 npc_shoot = 1
                 
-        else:
+        elif room == 2:
             freeze_waves = 0
             writing = False
 
@@ -421,10 +486,21 @@ if __name__ == '__main__':
         g_l_r1 = wall_hor.get_rect(
                 topleft=(0, 747))
         screen.blit(wall_hor, g_l_r1)
-        for i in courpses:
-            g_l_r2 = courpse.get_rect(
-                topleft=(i[0], i[1]))
-            screen.blit(courpse, g_l_r2)
+        if not(len(npc) == 0 and waves_count == 3) and room == 2:
+            g_l_r1 = walkthrough.get_rect(
+                    topleft=(350, -11))
+            screen.blit(walkthrough, g_l_r1)
+            g_l_r1 = walkthrough.get_rect(
+                    topleft=(350, 738))
+            screen.blit(walkthrough, g_l_r1)
+        else:
+            pygame.draw.rect(screen, (125, 96, 48), (350, 0, 465, 55))
+            pygame.draw.rect(screen, (125, 96, 48), (350, 740, 465, 60))
+        if room == 2:
+            for i in courpses:
+                g_l_r2 = courpse.get_rect(
+                    topleft=(i[0], i[1]))
+                screen.blit(courpse, g_l_r2)
         hero.draw()
         hero_2.draw()
         pygame.draw.rect(screen, (0, 0, 0), (0, 800, 1200, 100))
@@ -436,25 +512,29 @@ if __name__ == '__main__':
         screen.blit(hero_r, g_l_r1)
         pygame.draw.rect(screen, (255, 0, 0), (174, 830, int(230 * (hero.hp / hero.total)), 34))
         g_l_r1 = hp_bar.get_rect(
-                topleft=(600, 810))
+                topleft=(700, 810))
         screen.blit(hp_bar, g_l_r1)
         g_l_r1 = other_hero_r.get_rect(
-                topleft=(510, 810))
+                topleft=(610, 810))
         screen.blit(other_hero_r, g_l_r1)
-        pygame.draw.rect(screen, (255, 0, 0), (674, 830, int(230 * (hero_2.hp / hero.total)), 34))
-        for num, x in enumerate(npc):
-            x.move(x.hp, (GG_1 and GG_2))
-            if not (GG_1 and GG_2):
-                if x.hp <= 0:
-                    del npc[num]
-                if npc_shoot % x.cd  == 0:
-                    x.attack()
+        pygame.draw.rect(screen, (255, 0, 0), (774, 830, int(230 * (hero_2.hp / hero.total)), 34))
+        pygame.draw.rect(screen, (0, 255, 0), (474, 820, 30, 60 - int(h1_ab)))
+        pygame.draw.rect(screen, (0, 255, 0), (1074, 820, 30, 60 - int(h2_ab / 2)))
+        if room == 2:
+            for num, x in enumerate(npc):
+                x.move(x.hp, (GG_1 and GG_2))
+                if not (GG_1 and GG_2):
+                    if x.hp <= 0:
+                        del npc[num]
+                    if npc_shoot % x.cd  == 0:
+                        x.attack()
         for num, i in enumerate(bullets):
             if i.draw() is True:
                 del bullets[num]
-        for num, i in enumerate(npc_bullets):
-            if i.draw() is True:
-                del npc_bullets[num]
+        if room == 2:
+            for num, i in enumerate(npc_bullets):
+                if i.draw() is True:
+                    del npc_bullets[num]
         
         
         if waves_count == waves and len(npc) == 0 and win >= 0 and win < 60:
@@ -478,6 +558,8 @@ if __name__ == '__main__':
             hero.typer_l, hero.typer_r = hc, hc
         elif GG_2:
             hero_2.typer_l, hero_2.typer_r = hc, hc
+##        if (not GG_1 or not GG_2) and waves_count == waves and len(npc) == 0:
+##            if hero.x in list(range(350, 350 + 465)) and hero.hp > 0 and hero.y:
         clock.tick(fps)
         pygame.display.flip()
     pygame.quit()
