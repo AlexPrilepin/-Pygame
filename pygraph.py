@@ -37,10 +37,16 @@ hc = pygame.image.load('hero_dead.png')
 hc.set_colorkey((255, 255, 255))
 walkthrough = pygame.image.load('walkthrough.png')
 walkthrough.set_colorkey((255, 255, 255))
+trade = pygame.image.load('trading.png')
+trade.set_colorkey((255, 255, 255))
+portal = pygame.image.load('portal.png')
+portal.set_colorkey((255, 255, 255))
+
 
 aim = True
 GG_1, GG_2 = False, False
 courpses = []
+room = 1
 
 class Nepice:
     def __init__(self, x, y):
@@ -238,6 +244,8 @@ class Hero:
             return
         if self.y + m_y > 800 - 125:
             return
+        if room == 1 and self.x + m_x in list(range(0, 150)) and self.y + m_y in list(range(0, 200)):
+            return
         self.x += m_x
         self.y += m_y
         if m_x < 0:
@@ -363,7 +371,7 @@ class Hero:
 if __name__ == '__main__':
     npc_shoot = 0
     pygame.init()
-    pygame.display.set_caption('Движущийся круг 2')
+    pygame.display.set_caption('Soul Knight: PC Edition')
     size = width, height = 1200, 900
     screen = pygame.display.set_mode(size)
     x_pos, y_pos = 0, 0
@@ -385,7 +393,8 @@ if __name__ == '__main__':
     hero_2.cd = cd = 0
     h1_ab = 60
     h2_ab = 120
-    room = 2
+    room = 1
+    writing = False
     while running:
         if hero.cd > 0:
             hero.cd -= 1
@@ -486,6 +495,10 @@ if __name__ == '__main__':
         g_l_r1 = wall_hor.get_rect(
                 topleft=(0, 747))
         screen.blit(wall_hor, g_l_r1)
+        if room == 1:
+            g_l_r1 = trade.get_rect(
+                    topleft=(35, 0))
+            screen.blit(trade, g_l_r1)
         if not(len(npc) == 0 and waves_count == 3) and room == 2:
             g_l_r1 = walkthrough.get_rect(
                     topleft=(350, -11))
@@ -494,13 +507,20 @@ if __name__ == '__main__':
                     topleft=(350, 738))
             screen.blit(walkthrough, g_l_r1)
         else:
-            pygame.draw.rect(screen, (125, 96, 48), (350, 0, 465, 55))
-            pygame.draw.rect(screen, (125, 96, 48), (350, 740, 465, 60))
+            if room != 3:
+                pygame.draw.rect(screen, (125, 96, 48), (350, 0, 465, 55))
+            if room != 1:
+                pygame.draw.rect(screen, (125, 96, 48), (350, 740, 465, 60))
         if room == 2:
             for i in courpses:
                 g_l_r2 = courpse.get_rect(
                     topleft=(i[0], i[1]))
                 screen.blit(courpse, g_l_r2)
+        if room == 3:
+            g_l_r2 = portal.get_rect(
+                topleft=(500, 300))
+            screen.blit(portal, g_l_r2)
+                
         hero.draw()
         hero_2.draw()
         pygame.draw.rect(screen, (0, 0, 0), (0, 800, 1200, 100))
@@ -558,8 +578,56 @@ if __name__ == '__main__':
             hero.typer_l, hero.typer_r = hc, hc
         elif GG_2:
             hero_2.typer_l, hero_2.typer_r = hc, hc
-##        if (not GG_1 or not GG_2) and waves_count == waves and len(npc) == 0:
-##            if hero.x in list(range(350, 350 + 465)) and hero.hp > 0 and hero.y:
+        if room == 1 and hero.x in list(range(0, 200)) and hero.y in list(range(0, 250)):
+            n = pygame.font.Font(None, 120)
+            t = n.render('Press ENTER to', True, (0, 255, 0))
+            screen.blit(t, (200, 220))
+            t = n.render('Retire HP for 15 coins.', True, (0, 255, 0))
+            screen.blit(t, (200, 420))
+        elif room == 1 and hero_2.x in list(range(0, 200)) and hero_2.y in list(range(0, 250)):
+            n = pygame.font.Font(None, 120)
+            t = n.render('Press ENTER to', True, (0, 255, 0))
+            screen.blit(t, (200, 220))
+            t = n.render('Retire HP for 15 coins.', True, (0, 255, 0))
+            screen.blit(t, (200, 420))
+        if ((not GG_1 or not GG_2) and waves_count == waves and len(npc) == 0 and room == 2) or room == 1 or (len(courpses) > 0 and waves_count == 3 and len(npc) == 0 and room == 2):
+            if hero.x in list(range(350, 350 + 465)) and hero.hp > 0 and hero.y in list(range(0, 65)):
+                room += 1
+                hero.x = 350
+                hero.y = 600
+                hero_2.x = 700
+                hero_2.y = 600
+            if hero_2.x in list(range(350, 350 + 465)) and hero_2.hp > 0 and hero_2.y in list(range(0, 65)):
+                room += 1
+                hero.x = 350
+                hero.y = 600
+                hero_2.x = 700
+                hero_2.y = 600
+        if ((not GG_1 or not GG_2) and waves_count == waves and len(npc) == 0 and room == 2) or room == 3 or (len(courpses) > 0 and waves_count == 3 and len(npc) == 0 and room == 2):
+            if hero.x in list(range(350, 350 + 465)) and hero.hp > 0 and hero.y in list(range(620, 800)):
+                room -= 1
+                hero.x = 350
+                hero.y = 200
+                hero_2.x = 700
+                hero_2.y = 200
+            if hero_2.x in list(range(350, 350 + 465)) and hero_2.hp > 0 and hero_2.y in list(range(620, 800)):
+                room -= 1
+                hero.x = 350
+                hero.y = 200
+                hero_2.x = 700
+                hero_2.y = 200
+        if room == 3 and hero_2.x in list(range(450, 650)) and hero_2.y in list(range(200, 500)):
+            n = pygame.font.Font(None, 120)
+            t = n.render('Press ENTER to', True, (0, 255, 0))
+            screen.blit(t, (250, 220))
+            t = n.render('teleport foreward.', True, (0, 255, 0))
+            screen.blit(t, (250, 520))
+        if room == 3 and hero.x in list(range(450, 650)) and hero.y in list(range(200, 500)):
+            n = pygame.font.Font(None, 120)
+            t = n.render('Press ENTER to', True, (0, 255, 0))
+            screen.blit(t, (250, 220))
+            t = n.render('teleport foreward.', True, (0, 255, 0))
+            screen.blit(t, (250, 520))
         clock.tick(fps)
         pygame.display.flip()
     pygame.quit()
