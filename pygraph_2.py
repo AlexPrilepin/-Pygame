@@ -463,12 +463,6 @@ while running:
                 hero.move(0, -15)
             if keys[pygame.K_q] == True:
                 aim = not aim
-            if keys[pygame.K_RETURN] == True:
-                if room == 3:
-                    if hero.x in list(range(450, 650)) and hero.y in list(range(200, 500)) and not GG_1:
-                        running = False
-                    elif hero_2.x in list(range(450, 650)) and hero_2.y in list(range(200, 500)) and not GG_2:
-                        running = False
     if len(npc) == 0 and waves_count < waves and room == 2:
         if freeze_waves >= 90:
             npc = []
@@ -635,6 +629,4 @@ while running:
         screen.blit(t, (250, 520))
     clock.tick(fps)
     pygame.display.flip()
-import pygraph_2
-
-
+pygame.quit()
