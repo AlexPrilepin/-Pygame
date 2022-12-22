@@ -2,11 +2,15 @@ import pygame
 from random import choice, randint
 from math import sqrt, asin, pi, sin, cos
 
-
-goblin_l = pygame.image.load('goblin_l.png')
+obs = pygame.image.load('obstacle.png')
+goblin_l = pygame.image.load('skeletone_l.png')
 goblin_l.set_colorkey((255, 255, 255))
-goblin_r = pygame.image.load('goblin_r.png')
+goblin_r = pygame.image.load('skeletone_r.png')
 goblin_r.set_colorkey((255, 255, 255))
+boss_l = pygame.image.load('boss_l.png')
+boss_l.set_colorkey((255, 255, 255))
+boss_r = pygame.image.load('boss_r.png')
+boss_r.set_colorkey((255, 255, 255))
 hero_l = pygame.image.load('not_bandit.png')
 hero_l.set_colorkey((255, 255, 255))
 hero_r = pygame.image.load('bandit.png')
@@ -15,11 +19,11 @@ other_hero_l = pygame.image.load('other_hero_l.png')
 other_hero_l.set_colorkey((255, 255, 255))
 other_hero_r = pygame.image.load('other_hero_r.png')
 other_hero_r.set_colorkey((255, 255, 255))
-pol = pygame.image.load('pol.png')
+pol = pygame.image.load('pol_boss.png')
 pol.set_colorkey((255, 255, 255))
-wall_hor = pygame.image.load('wall_hor.png')
+wall_hor = pygame.image.load('wall_hor_boss.png')
 wall_hor.set_colorkey((255, 255, 255))
-wall_ver = pygame.image.load('wall_ver.png')
+wall_ver = pygame.image.load('wall_ver_boss.png')
 wall_ver.set_colorkey((255, 255, 255))
 rifle_l = pygame.image.load('rifle_l.png')
 rifle_l.set_colorkey((24, 29, 35))
@@ -27,8 +31,16 @@ rifle_r = pygame.image.load('rifle_r.png')
 rifle_r.set_colorkey((24, 29, 35))
 bullet = pygame.image.load('bullet.png')
 bullet.set_colorkey((255, 255, 255))
-npc_bullet = pygame.image.load('npc_bullet.png')
-npc_bullet.set_colorkey((0, 0, 0))
+blade = pygame.image.load('blade.png')
+blade.set_colorkey((255, 255, 255))
+npc_bullet_l = pygame.image.load('npc_bullet_5_l.png')
+npc_bullet_l.set_colorkey((255, 255, 255))
+npc_bullet_r = pygame.image.load('npc_bullet_5_r.png')
+npc_bullet_r.set_colorkey((255, 255, 255))
+boss_bullet_l = pygame.image.load('boss_bullet_l.png')
+boss_bullet_l.set_colorkey((255, 255, 255))
+boss_bullet_r = pygame.image.load('boss_bullet_r.png')
+boss_bullet_r.set_colorkey((255, 255, 255))
 courpse = pygame.image.load('courpse_1.png')
 courpse.set_colorkey((255, 255, 255))
 hp_bar = pygame.image.load('health_points.png')
@@ -43,21 +55,177 @@ portal = pygame.image.load('portal.png')
 portal.set_colorkey((255, 255, 255))
 coin = pygame.image.load('coin.png')
 coin.set_colorkey((255, 255, 255))
+            
+npc = []
+bullets = []
+npc_bullets = []
+boss_bullets = []
+bombs = []
 
-try:
-    with open("earning.txt", 'w'):
-        pass
-except IOError:
-    pass
-w = open("earning.txt", 'w')
-w.write('10' + '\n')
-w.write('10' + '\n')
-w.write('0' + '\n')
-w.close()
+
 aim = True
 GG_1, GG_2 = False, False
 courpses = []
 room = 1
+
+
+class Boss:
+    def __init__(self, x, y):
+        self.nx = choice([-1, 1])
+        self.ny = choice([-1, 1])
+        self.y = y
+        self.x = x
+        self.hp = 1000
+        self.spinner = 0
+        self.damage = 2
+        self.cd = 70
+        self.stop = False
+
+    def get_damage(self, amount):
+        global courpses, coins
+        self.hp -= amount
+        if self.hp <= 0:
+            courpses.append((self.x, self.y))
+        
+            
+    
+    def move(self, hp, stop):
+        
+        if self.spinner > 0:
+            self.spinner -= 1
+        if not stop and not self.stop:
+            adder_1 = self.nx * v / fps * 2
+            adder_2 = self.ny * v / fps * 2
+            if self.x + adder_1 <= 30:
+                self.nx *= -1
+            if self.y + adder_2 <= 50:
+                self.ny *= -1
+            if self.x + adder_1 > 1200 - 270:
+                self.nx *= -1
+            if self.y + adder_2 > 800 - 270:
+                self.ny *= -1
+            if room == 2:
+                if self.x + adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(200, 260)):
+                    if not (self.x - adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(200, 260))):
+                        self.nx = -self.nx
+                    elif not (self.x + adder_1 in list(range(400, 800)) and self.y - adder_2 in list(range(200, 260))):
+                        self.ny = -self.ny
+                    else:
+                        self.nx, self.ny = -1 * self.nx, -1 * self.ny
+                if self.x + adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(450, 610)):
+                    if not (self.x - adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(450, 610))):
+                        self.nx = -self.nx
+                    elif not (self.x + adder_1 in list(range(400, 800)) and self.y - adder_2 in list(range(450, 610))):
+                        self.ny = -self.ny
+                    else:
+                        self.nx, self.ny = -1 * self.nx, -1 * self.ny
+            adder_1 = self.nx * v / fps * 2
+            adder_2 = self.ny * v / fps * 2
+            self.x += adder_1
+            self.y += adder_2
+        if randint(0, 100) <= 3 and self.spinner > 0:
+            self.x, self.y = randint(250, 900), randint(250, 550)
+            self.nx, self.ny = choice([-1, 1]), choice([-1, 1])
+        self.draw(hp)
+        
+    def draw(self, hp):
+        self.stop = False
+        if self.spinner > 0:
+            g_l_r = blade.get_rect(
+            topleft=(self.x - 100, self.y + 50))
+            rot_image = pygame.transform.rotate(blade, choice(list(range(-80, 80))))
+            rot_rect = rot_image.get_rect(center=g_l_r.center)
+            rot_image.set_colorkey((255, 255, 255))
+            screen.blit(rot_image, rot_rect)
+            if sqrt((self.x - hero.x) ** 2 + (self.y + 100 - hero.y) ** 2) < 250:
+                if self.spinner % 3 == 0:
+                    hero.get_damage(1)
+            if sqrt((self.x  - hero_2.x) ** 2 + (self.y + 100 - hero_2.y) ** 2) < 250:
+                if self.spinner % 3 == 0:
+                    hero_2.get_damage(1)
+            self.stop = True
+        if (sqrt((hero_2.x - self.x) ** 2 + (hero_2.y - self.y) ** 2) <= sqrt((hero.x - self.x) ** 2 + (hero.y - self.y) ** 2) and hero_2.hp > 0) or hero.hp <= 0:
+            aim_x, aim_y = hero_2.x, hero_2.y
+        else:
+            aim_x, aim_y = hero.x, hero.y
+        if aim_x < self.x:
+            g_l_r = boss_l.get_rect(
+                topleft=(self.x, self.y))
+            screen.blit(boss_l, g_l_r)
+        else:
+            g_l_r = boss_r.get_rect(
+                topleft=(self.x, self.y))
+            screen.blit(boss_r, g_l_r)
+        pygame.draw.rect(screen, (0, 0, 0), (self.x - 2, self.y - 12, 210, 12), 4)
+        pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y - 10, int(210 * hp / 1000), 10))
+        
+
+
+    def attack(self):
+        at_type = choice([0, 1, 2, 3])
+        if (sqrt((hero_2.x - self.x) ** 2 + (hero_2.y - self.y) ** 2) <= sqrt((hero.x - self.x) ** 2 + (hero.y - self.y) ** 2) and hero_2.hp > 0) or hero.hp <= 0:
+            aim_x, aim_y = hero_2.x, hero_2.y
+        else:
+            aim_x, aim_y = hero.x, hero.y
+        if at_type == 0:
+            self.x += 100
+            self.y += 100
+            if aim_x > self.x:
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y + 100)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y - 100)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y + 50)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y - 50)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y + 75)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y - 75)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y + 25)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x + 100, self.y - 25)
+                boss_bullets.append(bull)
+            else:
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y + 100)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y - 100)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y + 50)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y - 50)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y + 75)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y - 75)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y + 25)
+                boss_bullets.append(bull)
+                bull = Boss_bullet(self.x, self.y, self.x - 100, self.y - 25)
+                boss_bullets.append(bull)
+
+            self.x -= 100
+            self.y -= 100
+        elif at_type == 1:
+            if len(npc) <= 7:
+                for i in range(choice(list(range(2, 5)))):
+                    x_pos, y_pos = randint(50, 1100), randint(50, 700)
+                    ball = Goblin(x_pos, y_pos)
+                    npc.append(ball)
+            else:
+                self.spinner = randint(20, 80)
+        elif at_type == 2:
+            for i in range(choice([5, 4, 3])):
+                x_pos, y_pos = randint(50, 1100), randint(50, 700)
+                ball = Bomb(x_pos, y_pos)
+                bombs.append(ball)
+        elif at_type == 3:
+            self.spinner = randint(20, 80)
 
 class Nepice:
     def __init__(self, x, y):
@@ -65,31 +233,49 @@ class Nepice:
         self.ny = choice([-1, 1])
         self.y = y
         self.x = x
-        self.hp = 10
+        self.hp = 4
         self.damage = 1
-        self.cd = randint(45, 55)
+        self.cd = randint(85, 100)
 
     def get_damage(self, amount):
         global courpses, coins
         self.hp -= amount
         if self.hp <= 0:
             courpses.append((self.x, self.y))
-            
         
             
     
     def move(self, hp, stop):
         if not stop:
-            self.x += self.nx * v / fps
-            self.y += self.ny * v / fps
+            adder_1 = self.nx * v / fps
+            adder_2 = self.ny * v / fps
             if self.x <= 30:
                 self.nx *= -1
             if self.y <= 50:
                 self.ny *= -1
-            if self.x > 1200 - 100:
+            if self.x > 1200 - 120:
                 self.nx *= -1
             if self.y > 800 - 120:
                 self.ny *= -1
+            if room == 2:
+                if self.x + adder_1 in list(range(300, 900)) and self.y + adder_2 in list(range(100, 300)):
+                    if not (self.x - adder_1 in list(range(300, 900)) and self.y + adder_2 in list(range(100, 300))):
+                        self.nx = -self.nx
+                    elif not (self.x + adder_1 in list(range(300, 900)) and self.y - adder_2 in list(range(100, 300))):
+                        self.ny = -self.ny
+                    else:
+                        self.nx, self.ny = -1 * self.nx, -1 * self.ny
+                if self.x + adder_1 in list(range(300, 800)) and self.y + adder_2 in list(range(350, 71)):
+                    if not (self.x - adder_1 in list(range(300, 900)) and self.y + adder_2 in list(range(350, 650))):
+                        self.nx = -self.nx
+                    elif not (self.x + adder_1 in list(range(300, 900)) and self.y - adder_2 in list(range(350, 650))):
+                        self.ny = -self.ny
+                    else:
+                        self.nx, self.ny = -1 * self.nx, -1 * self.ny
+            adder_1 = self.nx * v / fps * 2
+            adder_2 = self.ny * v / fps * 2
+            self.x += adder_1
+            self.y += adder_2
         self.draw(hp)
         
     def draw(self):
@@ -103,12 +289,12 @@ class Nepice:
         bullets.append(NPC_bullet(self.x, self.y, aim_x, aim_y))
         
 
-
+boss = Boss(300, 400)
 
 class Goblin(Nepice):
     def __init__(self, x, y):
         super().__init__(x, y)
-        self.hp = 12
+        self.hp = 4
         
     def draw(self, hp):
         if self.nx == -1:
@@ -120,22 +306,35 @@ class Goblin(Nepice):
                 topleft=(self.x, self.y))
             screen.blit(goblin_r, g_l_r)
         pygame.draw.rect(screen, (0, 0, 0), (self.x - 2, self.y - 12, 72, 12), 4)
-        pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y - 10, int(70 * hp / 12), 10))
+        pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y - 10, int(70 * hp / 4), 10))
         
-            
-npc = []
-bullets = []
-npc_bullets = []
 
+class Bomb:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.timer = 20
 
+    def draw(self):
+        self.timer -= 1
+        if self.timer == 0:
+            pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), 150)
+            if sqrt((self.x - hero.x) ** 2 + (self.y - hero.y) ** 2) < 150:
+                hero.get_damage(4)
+            if sqrt((self.x  - hero_2.x) ** 2 + (self.y - hero_2.y) ** 2) < 150:
+                hero_2.get_damage(4)
+            return True
+        else:
+            pygame.draw.circle(screen, (int(255 * (1 - self.timer / 20)), 0, 0), (self.x, self.y), 150)
+            return False
 
-class NPC_bullet:
+class Boss_bullet:
     def __init__(self, start_x, start_y, end_x, end_y):
         self.start_x = start_x
         self.start_y = start_y
         self.end_x = end_x
         self.end_y = end_y
-        self.damage = 1
+        self.damage = 2
         self.x, self.y = self.start_x, self.start_y
         self.angle = int(asin((self.start_y - self.end_y) / sqrt((self.end_x - self.start_x) ** 2 + (self.end_y - self.start_y) ** 2)) / pi * 180)
 
@@ -151,17 +350,81 @@ class NPC_bullet:
         if self.x < 30 or self.x > 1112 or self.y < 30 or self.y > 680:
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
-        if int(self.x + 30) in list(range(int(hero_2.x), int(hero_2.x + 70))) and int(self.y + 50) in list(range(int(hero_2.y), int(hero_2.y + 50))) and not GG_2:
+        if int(self.x + 15) in list(range(int(hero_2.x), int(hero_2.x + 70))) and int(self.y + 6) in list(range(int(hero_2.y), int(hero_2.y + 70))) and not GG_2:
             hero_2.get_damage(self.damage)
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
-        elif int(self.x + 30) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 50) in list(range(int(hero.y), int(hero.y + 50))) and not GG_1:
+        elif int(self.x + 15) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 6) in list(range(int(hero.y), int(hero.y + 70))) and not GG_1:
             hero.get_damage(self.damage)
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
-        g_l_r = npc_bullet.get_rect(
-            topleft=(self.x + 35, self.y + 50))
-        screen.blit(npc_bullet, g_l_r)
+        if room == 2:
+            if self.x + 50 in list(range(350, 850)) and self.y + 20 in list(range(150, 300)):
+                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
+                return True
+            if self.x + 50 in list(range(350, 850)) and self.y + 20 in list(range(400, 660)):
+                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
+                return True
+        g_l_r = boss_bullet_r.get_rect(
+            topleft=(self.x, self.y))
+        if self.start_x < self.end_x:
+            rot_image = pygame.transform.rotate(boss_bullet_r, self.angle)
+        else:
+            rot_image = pygame.transform.rotate(boss_bullet_l, -self.angle)
+        rot_rect = rot_image.get_rect(center=g_l_r.center)
+        rot_image.set_colorkey((255, 255, 255))
+        screen.blit(rot_image, rot_rect)
+        return False
+
+
+
+
+class NPC_bullet:
+    def __init__(self, start_x, start_y, end_x, end_y):
+        self.start_x = start_x
+        self.start_y = start_y
+        self.end_x = end_x
+        self.end_y = end_y
+        self.damage = 1
+        self.x, self.y = self.start_x, self.start_y
+        self.angle = int(asin((self.start_y - self.end_y) / sqrt((self.end_x - self.start_x) ** 2 + (self.end_y - self.start_y) ** 2)) / pi * 180)
+
+    def draw(self):
+        if self.start_x < self.end_x:
+            self.x += 26 * abs(cos(self.angle * pi / 180))
+        else:
+            self.x -= 26 * abs(cos(self.angle * pi / 180))
+        if self.start_y < self.end_y:
+            self.y += 26 * abs(sin(self.angle * pi / 180))
+        else:
+            self.y -= 26 * abs(sin(self.angle * pi / 180))
+        if self.x < 30 or self.x > 1112 or self.y < 30 or self.y > 680:
+            pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
+            return True
+        if int(self.x + 30) in list(range(int(hero_2.x), int(hero_2.x + 70))) and int(self.y + 4) in list(range(int(hero_2.y), int(hero_2.y + 70))) and not GG_2:
+            hero_2.get_damage(self.damage)
+            pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
+            return True
+        elif int(self.x + 30) in list(range(int(hero.x), int(hero.x + 70))) and int(self.y + 4) in list(range(int(hero.y), int(hero.y + 70))) and not GG_1:
+            hero.get_damage(self.damage)
+            pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
+            return True
+        g_l_r = npc_bullet_r.get_rect(
+            topleft=(self.x, self.y))
+        if self.start_x < self.end_x:
+            rot_image = pygame.transform.rotate(npc_bullet_r, self.angle)
+        else:
+            rot_image = pygame.transform.rotate(npc_bullet_l, -self.angle)
+        if room == 2:
+            if self.x + 30 in list(range(350, 850)) and self.y + 4 in list(range(150, 300)):
+                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
+                return True
+            if self.x + 30 in list(range(350, 850)) and self.y + 4 in list(range(400, 660)):
+                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
+                return True
+        rot_rect = rot_image.get_rect(center=g_l_r.center)
+        rot_image.set_colorkey((255, 255, 255))
+        screen.blit(rot_image, rot_rect)
         return False
 
 
@@ -200,6 +463,19 @@ class Hero_bullet:
                 i.get_damage(self.damage)
                 pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
                 return True
+        if room == 2:
+            if self.x + 30 in list(range(300, 900)) and self.y + 50 in list(range(100, 350)):
+                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
+                return True
+            if self.x + 30 in list(range(300, 900)) and self.y + 50 in list(range(350, 700)):
+                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
+                return True
+        x = boss.x
+        y = boss.y
+        if int(self.x + 30) in list(range(int(x), int(x + 230))) and int(self.y + 50) in list(range(int(y), int(y + 230))):
+            boss.get_damage(self.damage)
+            pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
+            return True
         if not self.super_bullet:
             g_l_r = bullet.get_rect(
                 topleft=(self.x + 35, self.y + 50))
@@ -258,6 +534,11 @@ class Hero:
             return
         if room == 1 and self.x + m_x in list(range(0, 150)) and self.y + m_y in list(range(0, 200)):
             return
+        if room == 2:
+            if self.x + m_x + 60 in list(range(400, 840)) and self.y + m_y + 70 in list(range(200, 230)):
+                return 
+            if self.x + m_x + 60 in list(range(400, 840)) and self.y + m_y + 70 in list(range(450, 580)):
+                return 
         self.x += m_x
         self.y += m_y
         if m_x < 0:
@@ -322,6 +603,7 @@ class Hero:
             
     def draw(self):
         if aim or self.tp == 2:
+            num = -1
             for num, i in enumerate(npc):
                 x, y = i.x, i.y
                 if num == 0:
@@ -329,10 +611,14 @@ class Hero:
                 if sqrt((self.x - x) ** 2 + (self.y - y) ** 2) < sqrt((self.x - self.target_x) ** 2 + (self.y - self.target_y) ** 2):
                     self.target_x, self.target_y = x, y
                 self.angle = int(asin((self.target_y - self.y) / sqrt((self.x - self.target_x) ** 2 + (self.y - self.target_y) ** 2)) / pi * 180)
+            x, y = boss.x, boss.y
+            if sqrt((self.x - x) ** 2 + (self.y - y) ** 2) < sqrt((self.x - self.target_x) ** 2 + (self.y - self.target_y) ** 2) or num == -1:
+                self.target_x, self.target_y = x, y
+            self.angle = int(asin((self.target_y - self.y) / sqrt((self.x - self.target_x) ** 2 + (self.y - self.target_y) ** 2)) / pi * 180)
         else:
             self.angle = int(asin((self.target_y - self.y) / sqrt((self.x - self.target_x) ** 2 + (self.y - self.target_y) ** 2)) / pi * 180)
 
-        if len(npc) == 0 and aim:
+        if (len(npc) == 0 and aim and boss.hp == 0) or room != 2:
             self.target_x, self.target_y = self.nx * 1000, self.y
             if self.nx == -1:
                 g_l_r = self.typer_l.get_rect(
@@ -435,7 +721,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            pygame.quit()
         if not (GG_1 and GG_2):
             if event.type == pygame.MOUSEMOTION:
                 if not aim:
@@ -512,23 +797,23 @@ while running:
                         else:
                             t = n.render('Not enough coins!', True, (255, 0, 0))
                             screen.blit(t, (300, 550))
-    if len(npc) == 0 and waves_count < waves and room == 2:
-        if freeze_waves >= 90:
-            npc = []
-            for i in range(choice(list(range(3 + waves_count * 2, 10 + waves_count)))):
-                x_pos, y_pos = randint(50, 1100), randint(50, 700)
-                ball = Goblin(x_pos, y_pos)
-                npc.append(ball)
-            waves_count += 1
-            writing = False
-        else:
-            freeze_waves += 1
-            writing = True
-            npc_shoot = 1
-            
-    elif room == 2:
-        freeze_waves = 0
-        writing = False
+##    if len(npc) == 0 and waves_count < waves and room == 2:
+##        if freeze_waves >= 90:
+##            npc = []
+##            for i in range(choice(list(range(3 + waves_count * 2, 10 + waves_count)))):
+##                x_pos, y_pos = randint(50, 1100), randint(50, 700)
+##                ball = Goblin(x_pos, y_pos)
+##                npc.append(ball)
+##            waves_count += 1
+##            writing = False
+##        else:
+##            freeze_waves += 1
+##            writing = True
+##            npc_shoot = 1
+##            
+##    elif room == 2:
+##        freeze_waves = 0
+##        writing = False
 
     
     g_l_r = wall_hor.get_rect(
@@ -543,6 +828,13 @@ while running:
     g_l_r1 = wall_hor.get_rect(
             topleft=(0, 747))
     screen.blit(wall_hor, g_l_r1)
+    if room == 2:
+        g_l_r1 = obs.get_rect(
+                topleft=(400, 200))
+        screen.blit(obs, g_l_r1)
+        g_l_r1 = obs.get_rect(
+                topleft=(400, 450))
+        screen.blit(obs, g_l_r1)
     if room == 1:
         g_l_r1 = trade.get_rect(
                 topleft=(35, 0))
@@ -568,7 +860,10 @@ while running:
         g_l_r2 = portal.get_rect(
             topleft=(500, 300))
         screen.blit(portal, g_l_r2)
-            
+    if room == 2:
+        for num, i in enumerate(bombs):
+            if i.draw() is True:
+                del bombs[num]        
     hero.draw()
     hero_2.draw()
     pygame.draw.rect(screen, (0, 0, 0), (0, 800, 1200, 100))
@@ -604,6 +899,14 @@ while running:
                     print(coins)
                 if npc_shoot % x.cd  == 0:
                     x.attack()
+        x = boss
+        x.move(x.hp, (GG_1 and GG_2))
+        if not (GG_1 and GG_2):
+            if x.hp <= 0:
+                coins += 1
+                print(coins)
+            if npc_shoot % x.cd  == 0:
+                x.attack()
     for num, i in enumerate(bullets):
         if i.draw() is True:
             del bullets[num]
@@ -611,13 +914,12 @@ while running:
         for num, i in enumerate(npc_bullets):
             if i.draw() is True:
                 del npc_bullets[num]
+    if room == 2:
+        for num, i in enumerate(boss_bullets):
+            if i.draw() is True:
+                del boss_bullets[num]
     
-    if rs >= 0 and rs < 60 and room == 1:
-        rs += 1
-        n = pygame.font.Font(None, 120)
-        t = n.render('LEVEL 1-1!', True, (0, 0, 255))
-        screen.blit(t, (350, 420))
-        
+    
     if waves_count == waves and len(npc) == 0 and win >= 0 and win < 60:
         win += 1
         n = pygame.font.Font(None, 120)
@@ -693,10 +995,14 @@ while running:
         screen.blit(t, (250, 220))
         t = n.render('teleport foreward.', True, (0, 255, 0))
         screen.blit(t, (250, 520))
+    if rs >= 0 and rs < 60 and room == 1:
+        rs += 1
+        n = pygame.font.Font(None, 120)
+        t = n.render('LEVEL 1-5!', True, (0, 0, 255))
+        screen.blit(t, (350, 420))
+        
     clock.tick(fps)
     pygame.display.flip()
-    
-
 try:
     with open("earning.txt", 'w'):
         pass
@@ -707,6 +1013,4 @@ w.write(str(hero.hp) + '\n')
 w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
 w.close()
-import pygraph_2
-
-
+pygame.quit()
