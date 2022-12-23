@@ -4,6 +4,7 @@ from math import sqrt, asin, pi, sin, cos
 
 obs = pygame.image.load('obstacle.png')
 goblin_l = pygame.image.load('skeletone_l.png')
+obs.set_colorkey((255, 255, 255))
 goblin_l.set_colorkey((255, 255, 255))
 goblin_r = pygame.image.load('skeletone_r.png')
 goblin_r.set_colorkey((255, 255, 255))
@@ -94,8 +95,8 @@ class Boss:
         if self.spinner > 0:
             self.spinner -= 1
         if not stop and not self.stop:
-            adder_1 = self.nx * v / fps * 2
-            adder_2 = self.ny * v / fps * 2
+            adder_1 = int(self.nx * v / fps * 2)
+            adder_2 = int(self.ny * v / fps * 2)
             if self.x + adder_1 <= 30:
                 self.nx *= -1
             if self.y + adder_2 <= 50:
@@ -105,26 +106,21 @@ class Boss:
             if self.y + adder_2 > 800 - 270:
                 self.ny *= -1
             if room == 2:
-                if self.x + adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(200, 260)):
-                    if not (self.x - adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(200, 260))):
+                if self.x + adder_1 in list(range(200, 350 + 380)) and self.y + adder_2 in list(range(160, 180 + 230)):
+                    if not (self.x - adder_1 in list(range(200, 350 + 380)) and self.y + adder_2 in list(range(160, 180 + 230))):
                         self.nx = -self.nx
-                    elif not (self.x + adder_1 in list(range(400, 800)) and self.y - adder_2 in list(range(200, 260))):
+                    elif not (self.x + adder_1 in list(range(200, 350 + 380)) and self.y - adder_2 in list(range(160, 180 + 230))):
                         self.ny = -self.ny
                     else:
                         self.nx, self.ny = -1 * self.nx, -1 * self.ny
-                if self.x + adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(450, 610)):
-                    if not (self.x - adder_1 in list(range(400, 800)) and self.y + adder_2 in list(range(450, 610))):
-                        self.nx = -self.nx
-                    elif not (self.x + adder_1 in list(range(400, 800)) and self.y - adder_2 in list(range(450, 610))):
-                        self.ny = -self.ny
-                    else:
-                        self.nx, self.ny = -1 * self.nx, -1 * self.ny
-            adder_1 = self.nx * v / fps * 2
-            adder_2 = self.ny * v / fps * 2
+            adder_1 = int(self.nx * v / fps * 2)
+            adder_2 = int(self.ny * v / fps * 2)
             self.x += adder_1
             self.y += adder_2
         if randint(0, 100) <= 3 and self.spinner > 0:
             self.x, self.y = randint(250, 900), randint(250, 550)
+            while self.x in list(range(200, 350 + 380)) and self.y in list(range(160, 180 + 230)):
+                self.x, self.y = randint(250, 900), randint(250, 550)
             self.nx, self.ny = choice([-1, 1]), choice([-1, 1])
         self.draw(hp)
         
@@ -215,6 +211,8 @@ class Boss:
             if len(npc) <= 7:
                 for i in range(choice(list(range(2, 5)))):
                     x_pos, y_pos = randint(50, 1100), randint(50, 700)
+                    while x_pos in list(range(300, 350 + 380)) and y_pos in list(range(280, 180 + 320)):
+                        x_pos, y_pos = randint(50, 1100), randint(50, 700)
                     ball = Goblin(x_pos, y_pos)
                     npc.append(ball)
             else:
@@ -247,8 +245,8 @@ class Nepice:
     
     def move(self, hp, stop):
         if not stop:
-            adder_1 = self.nx * v / fps
-            adder_2 = self.ny * v / fps
+            adder_1 = int(self.nx * v / fps * 2)
+            adder_2 = int(self.ny * v / fps * 2)
             if self.x <= 30:
                 self.nx *= -1
             if self.y <= 50:
@@ -258,22 +256,15 @@ class Nepice:
             if self.y > 800 - 120:
                 self.ny *= -1
             if room == 2:
-                if self.x + adder_1 in list(range(300, 900)) and self.y + adder_2 in list(range(100, 300)):
-                    if not (self.x - adder_1 in list(range(300, 900)) and self.y + adder_2 in list(range(100, 300))):
+                if self.x + adder_1 in list(range(300, 350 + 380)) and self.y + adder_2 in list(range(280, 180 + 320)):
+                    if not (self.x - adder_1 in list(range(300, 350 + 380)) and self.y + adder_2 in list(range(280, 180 + 320))):
                         self.nx = -self.nx
-                    elif not (self.x + adder_1 in list(range(300, 900)) and self.y - adder_2 in list(range(100, 300))):
+                    elif not (self.x + adder_1 in list(range(300, 350 + 380)) and self.y - adder_2 in list(range(280, 180 + 320))):
                         self.ny = -self.ny
                     else:
                         self.nx, self.ny = -1 * self.nx, -1 * self.ny
-                if self.x + adder_1 in list(range(300, 800)) and self.y + adder_2 in list(range(350, 71)):
-                    if not (self.x - adder_1 in list(range(300, 900)) and self.y + adder_2 in list(range(350, 650))):
-                        self.nx = -self.nx
-                    elif not (self.x + adder_1 in list(range(300, 900)) and self.y - adder_2 in list(range(350, 650))):
-                        self.ny = -self.ny
-                    else:
-                        self.nx, self.ny = -1 * self.nx, -1 * self.ny
-            adder_1 = self.nx * v / fps * 2
-            adder_2 = self.ny * v / fps * 2
+            adder_1 = int(self.nx * v / fps * 2)
+            adder_2 = int(self.ny * v / fps * 2)
             self.x += adder_1
             self.y += adder_2
         self.draw(hp)
@@ -289,7 +280,7 @@ class Nepice:
         bullets.append(NPC_bullet(self.x, self.y, aim_x, aim_y))
         
 
-boss = Boss(300, 400)
+boss = Boss(300, 100)
 
 class Goblin(Nepice):
     def __init__(self, x, y):
@@ -359,10 +350,7 @@ class Boss_bullet:
             pygame.draw.circle(screen, (0, 0, 255), (self.x + 30, self.y + 55), 15)
             return True
         if room == 2:
-            if self.x + 50 in list(range(350, 850)) and self.y + 20 in list(range(150, 300)):
-                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
-                return True
-            if self.x + 50 in list(range(350, 850)) and self.y + 20 in list(range(400, 660)):
+            if int(self.x + 50) in list(range(350, 350 + 380)) and int(self.y + 20) in list(range(320, 320 + 180)):
                 pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
                 return True
         g_l_r = boss_bullet_r.get_rect(
@@ -416,12 +404,10 @@ class NPC_bullet:
         else:
             rot_image = pygame.transform.rotate(npc_bullet_l, -self.angle)
         if room == 2:
-            if self.x + 30 in list(range(350, 850)) and self.y + 4 in list(range(150, 300)):
+            if int(self.x + 30) in list(range(350, 350 + 380)) and int(self.y + 4) in list(range(320, 320 + 180)):
                 pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
                 return True
-            if self.x + 30 in list(range(350, 850)) and self.y + 4 in list(range(400, 660)):
-                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
-                return True
+
         rot_rect = rot_image.get_rect(center=g_l_r.center)
         rot_image.set_colorkey((255, 255, 255))
         screen.blit(rot_image, rot_rect)
@@ -464,10 +450,7 @@ class Hero_bullet:
                 pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
                 return True
         if room == 2:
-            if self.x + 30 in list(range(300, 900)) and self.y + 50 in list(range(100, 350)):
-                pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
-                return True
-            if self.x + 30 in list(range(300, 900)) and self.y + 50 in list(range(350, 700)):
+            if int(self.x + 30) in list(range(350, 350 + 380)) and int(self.y + 50) in list(range(320, 320 + 180)):
                 pygame.draw.circle(screen, (255, 0, 0), (self.x + 30, self.y + 55), 15)
                 return True
         x = boss.x
@@ -535,9 +518,7 @@ class Hero:
         if room == 1 and self.x + m_x in list(range(0, 150)) and self.y + m_y in list(range(0, 200)):
             return
         if room == 2:
-            if self.x + m_x + 60 in list(range(400, 840)) and self.y + m_y + 70 in list(range(200, 230)):
-                return 
-            if self.x + m_x + 60 in list(range(400, 840)) and self.y + m_y + 70 in list(range(450, 580)):
+            if self.x + m_x + 60 in list(range(350, 350 + 380)) and self.y + m_y + 70 in list(range(320, 320 + 180)):
                 return 
         self.x += m_x
         self.y += m_y
@@ -830,10 +811,7 @@ while running:
     screen.blit(wall_hor, g_l_r1)
     if room == 2:
         g_l_r1 = obs.get_rect(
-                topleft=(400, 200))
-        screen.blit(obs, g_l_r1)
-        g_l_r1 = obs.get_rect(
-                topleft=(400, 450))
+                topleft=(350, 320))
         screen.blit(obs, g_l_r1)
     if room == 1:
         g_l_r1 = trade.get_rect(
