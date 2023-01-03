@@ -52,6 +52,11 @@ GG_1, GG_2 = False, False
 courpses = []
 room = 1
 
+f1 = open('buffs.txt').read().split('\n')
+hp_boost = int(f1[0])
+damage_boost = int(f1[1])
+speed_boost = int(f1[2])
+
 class Nepice:
     def __init__(self, x, y):
         self.nx = choice([-1, 1])
@@ -141,7 +146,7 @@ class NPC_bullet:
         self.end_y = end_y + randint(-200, 200)
         self.damage = 2
         self.x, self.y = self.start_x, self.start_y
-        self.count_move = 200
+        self.count_move = 150
         self.angle = int(asin((self.start_y - self.end_y) / sqrt((self.end_x - self.start_x) ** 2 + (self.end_y - self.start_y) ** 2)) / pi * 180)
 
     def draw(self):
@@ -186,7 +191,7 @@ class Hero_bullet:
         self.start_y = start_y
         self.end_x = end_x
         self.end_y = end_y
-        self.damage = damage
+        self.damage = damage + damage_boost
         self.x, self.y = self.start_x, self.start_y
         self.super_bullet = super_bullet
         try:
@@ -238,8 +243,8 @@ class Hero:
         self.target_x = 1000
         self.target_y = 600
         self.angle = 0
-        self.hp = 10
-        self.total = 10
+        self.hp = 10 + hp_boost
+        self.total = 10 + hp_boost
         self.cd = 0
         if typer == 1:
             self.typer_r = hero_r
@@ -260,6 +265,7 @@ class Hero:
                 GG_2 = True
 
     def move(self, m_x, m_y):
+        m_x, m_y = m_x + m_x * (speed_boost * 15 / 100), m_y * (speed_boost * 15 / 100) + m_y        
         if ((GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2)):
             return
         if self.x + m_x <= 10:
@@ -529,7 +535,7 @@ while running:
     if len(npc) == 0 and waves_count < waves and room == 2:
         if freeze_waves >= 90:
             npc = []
-            for i in range(choice(list(range(5 + waves_count * 2, 12 + waves_count)))):
+            for i in range(choice(list(range(8 + waves_count * 2, 14 + waves_count)))):
                 x_pos, y_pos = randint(50, 1100), randint(50, 700)
                 ball = Goblin(x_pos, y_pos)
                 npc.append(ball)
@@ -592,7 +598,6 @@ while running:
     g_l_r1 = hero_r.get_rect(
             topleft=(10, 810))
     screen.blit(hero_r, g_l_r1)
-    pygame.draw.rect(screen, (255, 0, 0), (174, 830, int(230 * (hero.hp / hero.total)), 34))
     g_l_r1 = hp_bar.get_rect(
             topleft=(600, 810))
     screen.blit(hp_bar, g_l_r1)
@@ -605,7 +610,8 @@ while running:
     n = pygame.font.Font(None, 80)
     t = n.render(str(coins), True, (255, 255, 0))
     screen.blit(t, (1080, 820))
-    pygame.draw.rect(screen, (255, 0, 0), (674, 830, int(230 * (hero_2.hp / hero.total)), 34))
+    pygame.draw.rect(screen, (255, 0, 0), (174, 830, int(230 * (hero.hp / (hero.total + hp_boost))), 34))
+    pygame.draw.rect(screen, (255, 0, 0), (674, 830, int(230 * (hero_2.hp / (hero.total + hp_boost))), 34))
     pygame.draw.rect(screen, (0, 255, 0), (420, 820, 30, 60 - int(h1_ab)))
     pygame.draw.rect(screen, (0, 255, 0), (920, 820, 30, 60 - int(h2_ab / 2)))
     if room == 2:
@@ -720,4 +726,4 @@ w.write(str(hero.hp) + '\n')
 w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
 w.close()
-import pygraph_4
+import prom_3

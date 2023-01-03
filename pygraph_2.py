@@ -50,6 +50,12 @@ GG_1, GG_2 = False, False
 courpses = []
 room = 1
 
+
+f1 = open('buffs.txt').read().split('\n')
+hp_boost = int(f1[0])
+damage_boost = int(f1[1])
+speed_boost = int(f1[2])
+
 class Nepice:
     def __init__(self, x, y):
         self.nx = choice([-1, 1])
@@ -168,7 +174,7 @@ class Hero_bullet:
         self.start_y = start_y
         self.end_x = end_x
         self.end_y = end_y
-        self.damage = damage
+        self.damage = damage + damage_boost
         self.x, self.y = self.start_x, self.start_y
         self.super_bullet = super_bullet
         try:
@@ -220,8 +226,8 @@ class Hero:
         self.target_x = 1000
         self.target_y = 600
         self.angle = 0
-        self.hp = 10
-        self.total = 10
+        self.hp = 10 + hp_boost
+        self.total = 10 + hp_boost
         self.cd = 0
         if typer == 1:
             self.typer_r = hero_r
@@ -242,6 +248,7 @@ class Hero:
                 GG_2 = True
 
     def move(self, m_x, m_y):
+        m_x, m_y = m_x + m_x * (speed_boost * 15 / 100), m_y * (speed_boost * 15 / 100) + m_y        
         if ((GG_1 == True and self.tp == 1) or (GG_2 == True and self.tp == 2)):
             return
         if self.x + m_x <= 10:
@@ -493,8 +500,8 @@ while running:
                             coins -= 15
                             GG_1 = False
                             GG_2 = False
-                            hero.hp = 10
-                            hero_2.hp = 10
+                            hero.hp = 10 + hp_boost
+                            hero_2.hp = 10 + hp_boost
                         else:
                             t = n.render('Not enough coins!', True, (255, 0, 0))
                             screen.blit(t, (300, 550))
@@ -574,7 +581,6 @@ while running:
     g_l_r1 = hero_r.get_rect(
             topleft=(10, 810))
     screen.blit(hero_r, g_l_r1)
-    pygame.draw.rect(screen, (255, 0, 0), (174, 830, int(230 * (hero.hp / hero.total)), 34))
     g_l_r1 = hp_bar.get_rect(
             topleft=(600, 810))
     screen.blit(hp_bar, g_l_r1)
@@ -587,7 +593,8 @@ while running:
     n = pygame.font.Font(None, 80)
     t = n.render(str(coins), True, (255, 255, 0))
     screen.blit(t, (1080, 820))
-    pygame.draw.rect(screen, (255, 0, 0), (674, 830, int(230 * (hero_2.hp / hero.total)), 34))
+    pygame.draw.rect(screen, (255, 0, 0), (174, 830, int(230 * (hero.hp / (hero.total + hp_boost))), 34))
+    pygame.draw.rect(screen, (255, 0, 0), (674, 830, int(230 * (hero_2.hp / (hero.total + hp_boost))), 34))
     pygame.draw.rect(screen, (0, 255, 0), (420, 820, 30, 60 - int(h1_ab)))
     pygame.draw.rect(screen, (0, 255, 0), (920, 820, 30, 60 - int(h2_ab / 2)))
     if room == 2:
@@ -596,7 +603,7 @@ while running:
             if not (GG_1 and GG_2):
                 if x.hp <= 0:
                     del npc[num]
-                    coins += 1
+                    coins += 2
                     print(coins)
                 if npc_shoot % x.cd  == 0:
                     x.attack()
@@ -701,5 +708,5 @@ w.write(str(hero.hp) + '\n')
 w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
 w.close()
-import pygraph_3
+import prom_2
 
