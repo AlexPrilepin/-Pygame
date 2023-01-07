@@ -9,8 +9,16 @@ shes = pygame.image.load('shes.png')
 shes.set_colorkey((255, 255, 255))
 learn = pygame.image.load('learn.png')
 learn.set_colorkey((255, 255, 255))
-play_a_l = pygame.image.load('play_a_l.png')
-play_a_l.set_colorkey((255, 255, 255))
+play_1 = pygame.image.load('play_1.png')
+play_1.set_colorkey((255, 255, 255))
+play_2 = pygame.image.load('play_2.png')
+play_2.set_colorkey((255, 255, 255))
+play_3 = pygame.image.load('play_3.png')
+play_3.set_colorkey((255, 255, 255))
+play_4 = pygame.image.load('play_4.png')
+play_4.set_colorkey((255, 255, 255))
+play_5 = pygame.image.load('play_5.png')
+play_5.set_colorkey((255, 255, 255))
 fon_shes = pygame.image.load('Fonshes.png')
 fon_shes.set_colorkey((255, 255, 255))
 sound_on = pygame.image.load('sound_on.png')
@@ -51,7 +59,7 @@ if __name__ == '__main__':
         topleft=(width // 2 - 180, 500))
     o_w3 = learn.get_rect(
         topleft=(width // 2 - 520, 500))
-    o_w4 = play_a_l.get_rect(
+    o_w4 = play_1.get_rect(
         topleft=(width // 2 + 190, 500))
 
     fs = fon_shes.get_rect(
@@ -63,10 +71,33 @@ if __name__ == '__main__':
     load = loading.get_rect(
         topleft=(0, 0))
     screen.blit(loading, load)
-
+    f1 = open('info.txt').read().split('\n')
+    lvl = int(f1[0])
     running = True
     reload = 0
+    c = 0
+    b = 0
+    draw = 0
     while running:
+        if b > 0:
+            b += 1
+        if b == 15:
+            f1 = open('info.txt').read().split('\n')
+            lvl = int(f1[0])
+            if lvl == 1:
+                import pygraph
+            elif lvl == 2:
+                import pygraph_2
+            elif lvl == 3:
+                import pygraph_3
+            elif lvl == 4:
+                import pygraph_4
+            elif lvl == 5:
+                import pygraph_5  
+        if c > 0:
+            c += 1
+        if c == 15:
+            import pygraph
         x_pos, y_pos = -1, -1
         if reload > 0:
             reload -= 1
@@ -88,10 +119,33 @@ if __name__ == '__main__':
             o_w3 = learn.get_rect(
                 topleft=(width // 2 - 520, 500))
             screen.blit(learn, o_w3)
-            o_w4 = play_a_l.get_rect(
-                topleft=(width // 2 + 190, 500))
-            screen.blit(play_a_l, o_w4)
-
+            if lvl == 1:
+                o_w4 = play_1.get_rect(
+                    topleft=(width // 2 + 190, 500))
+                screen.blit(play_1, o_w4)
+            elif lvl == 2:
+                o_w4 = play_2.get_rect(
+                    topleft=(width // 2 + 190, 500))
+                screen.blit(play_2, o_w4)
+            elif lvl == 3:
+                o_w4 = play_3.get_rect(
+                    topleft=(width // 2 + 190, 500))
+                screen.blit(play_3, o_w4)
+            elif lvl == 4:
+                o_w4 = play_4.get_rect(
+                    topleft=(width // 2 + 190, 500))
+                screen.blit(play_4, o_w4)
+            elif lvl == 5:
+                o_w4 = play_5.get_rect(
+                    topleft=(width // 2 + 190, 500))
+                screen.blit(play_5, o_w4)
+            if draw > 0:
+                draw -= 1
+                pygame.draw.rect(screen, (255, 255, 255), (370, 200, 400, 100))
+                pygame.draw.rect(screen, (255, 0, 0), (360, 190, 420, 120), 10)
+                fsс = pygame.font.SysFont('serif', 48)
+                complexity = fsс.render("В разработке...", True, (255, 0, 0))
+                screen_shes.blit(complexity, (410, 220))
             if event.type == pygame.MOUSEBUTTONUP:
                 x_pos, y_pos = event.pos
                 if x_pos in list(range(width - 120, width + 100)) and y_pos in list(range(5, 105)):
@@ -99,10 +153,14 @@ if __name__ == '__main__':
                 if x_pos in list(range(width // 2 - 180, width // 2 + 140)) and y_pos in list(range(400, 600)):
                     print('2')
                     open_1 = 2
+                    c += 1
                 if x_pos in list(range(width // 2 - 520, width // 2 - 200)) and y_pos in list(range(400, 600)):
                     print('3')
+                    draw = 45
                 if x_pos in list(range(width // 2 + 190, width // 2 + 520)) and y_pos in list(range(400, 600)):
                     print('4')
+                    open_1 = 2
+                    b += 1
 
         elif open_1 == 1:
             x_pos, y_pos = -1, -1

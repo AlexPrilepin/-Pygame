@@ -2,6 +2,17 @@ import pygame
 from random import choice, randint
 from math import sqrt, asin, pi, sin, cos
 
+
+try:
+    with open("info.txt", 'w'):
+        pass
+except IOError:
+    pass
+w = open("info.txt", 'w')
+w.write(str(5) + '\n')
+w.write(str(0) + '\n')
+w.close()
+
 obs = pygame.image.load('obstacle.png')
 goblin_l = pygame.image.load('skeletone_l.png')
 obs.set_colorkey((255, 255, 255))
@@ -997,4 +1008,16 @@ w.write(str(hero.hp) + '\n')
 w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
 w.close()
+
+
+try:
+    with open("info.txt", 'w'):
+        pass
+except IOError:
+    pass
+w = open("info.txt", 'w')
+w.write(str(5) + '\n')
+w.write(str(0) + '\n')
+w.close()
+
 pygame.quit()

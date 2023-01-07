@@ -3,6 +3,16 @@ from random import choice, randint
 from math import sqrt, asin, pi, sin, cos
 
 
+try:
+    with open("info.txt", 'w'):
+        pass
+except IOError:
+    pass
+w = open("info.txt", 'w')
+w.write(str(3) + '\n')
+w.write(str(0) + '\n')
+w.close()
+
 goblin_l = pygame.image.load('npc_3_l.png')
 goblin_l.set_colorkey((255, 255, 255))
 goblin_r = pygame.image.load('npc_3_r.png')
@@ -726,4 +736,6 @@ w.write(str(hero.hp) + '\n')
 w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
 w.close()
+
+
 import prom_3

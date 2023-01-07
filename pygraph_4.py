@@ -2,6 +2,17 @@ import pygame
 from random import choice, randint
 from math import sqrt, asin, pi, sin, cos
 
+
+try:
+    with open("info.txt", 'w'):
+        pass
+except IOError:
+    pass
+w = open("info.txt", 'w')
+w.write(str(4) + '\n')
+w.write(str(0) + '\n')
+w.close()
+
 spikes = pygame.image.load('spikes.png')
 spikes.set_colorkey((255, 255, 255))
 goblin_l = pygame.image.load('npc_4_l.png')
@@ -764,4 +775,16 @@ w.write(str(hero.hp) + '\n')
 w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
 w.close()
+
+
+try:
+    with open("info.txt", 'w'):
+        pass
+except IOError:
+    pass
+w = open("info.txt", 'w')
+w.write(str(4) + '\n')
+w.write(str(0) + '\n')
+w.close()
+
 import prom_4
