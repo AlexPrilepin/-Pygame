@@ -11,12 +11,17 @@ learn = pygame.image.load('learn.png')
 learn.set_colorkey((255, 255, 255))
 play_a_l = pygame.image.load('play_a_l.png')
 play_a_l.set_colorkey((255, 255, 255))
+fon_shes = pygame.image.load('Fonshes.png')
+fon_shes.set_colorkey((255, 255, 255))
 sound_on = pygame.image.load('sound_on.png')
 sound_on.set_colorkey((255, 255, 255))
 sound_off = pygame.image.load('sound_off.png')
 sound_off.set_colorkey((255, 255, 255))
-fon_shes = pygame.image.load('Fonshes.png')
-fon_shes.set_colorkey((255, 255, 255))
+menu = pygame.image.load('Menu.png')
+menu.set_colorkey((255, 255, 255))
+loading = pygame.image.load('Loading.png')
+loading.set_colorkey((255, 255, 255))
+
 level = 1
 sound1 = False
 open_1 = 0
@@ -27,9 +32,16 @@ if __name__ == '__main__':
     size = width, height = 1170, 650
     screen = pygame.display.set_mode(size)
     screen_shes = pygame.display.set_mode(size)
+    screen_loading = pygame.display.set_mode(size)
+
     level = 1
+
     x_pos, y_pos = 0, 0
     main_win = True
+
+    clock = pygame.time.Clock()
+    t = 3
+
     o_w = fon.get_rect(
         topleft=(0, 0))
     screen.blit(fon, o_w)
@@ -45,6 +57,12 @@ if __name__ == '__main__':
     fs = fon_shes.get_rect(
         topleft=(0, 0))
     screen.blit(fon_shes, fs)
+    o_w_menu = menu.get_rect(
+        topleft=(width // 2 + 230, 500))
+
+    load = loading.get_rect(
+        topleft=(0, 0))
+    screen.blit(loading, load)
 
     running = True
     reload = 0
@@ -55,6 +73,7 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
         if open_1 == 0:
             o_w = fon.get_rect(
                 topleft=(0, 0))
@@ -79,10 +98,12 @@ if __name__ == '__main__':
                     open_1 = 1
                 if x_pos in list(range(width // 2 - 180, width // 2 + 140)) and y_pos in list(range(400, 600)):
                     print('2')
+                    open_1 = 2
                 if x_pos in list(range(width // 2 - 520, width // 2 - 200)) and y_pos in list(range(400, 600)):
                     print('3')
                 if x_pos in list(range(width // 2 + 190, width // 2 + 520)) and y_pos in list(range(400, 600)):
                     print('4')
+
         elif open_1 == 1:
             x_pos, y_pos = -1, -1
             fs = fon_shes.get_rect(
@@ -99,6 +120,10 @@ if __name__ == '__main__':
             sound = fss.render("Звук:", True, (0, 0, 0))
             screen_shes.blit(sound, (275, 500))
             pygame.draw.rect(screen, (200, 253, 203), (width // 2 - 200, 400, 1000, 1000))
+            o_w_menu = menu.get_rect(
+                topleft=(width // 2 + 230, 500))
+            screen.blit(menu, o_w_menu)
+
             if sound1 is True:
                 fs = sound_on.get_rect(
                     topleft=(width // 2 - 50, 450))
@@ -107,6 +132,7 @@ if __name__ == '__main__':
                 fs = sound_off.get_rect(
                     topleft=(width // 2 - 50, 450))
                 screen_shes.blit(sound_off, fs)
+
             if event.type == pygame.MOUSEBUTTONUP and reload == 0:
                 x_pos, y_pos = event.pos
                 if x_pos in list(range(width // 2 - 250, width // 2 - 160)) and y_pos in list(range(15, 110)):
@@ -127,11 +153,26 @@ if __name__ == '__main__':
                 elif x_pos in list(range(width // 2 - 50, width // 2 + 170)) and y_pos in list(range(450, 600)):
                     sound1 = not sound1
                     reload = 10
+                elif x_pos in list(range(width // 2 + 230, width // 2 + 570)) and y_pos in list(range(500, 600)):
+                    print('Меню')
+                    open_1 = 0
+                    reload = 10
+
             if level == 1:
                 pygame.draw.circle(screen, (255, 255, 255), (390, 85), 48, 10)
             elif level == 2:
                 pygame.draw.circle(screen, (255, 255, 255), (628, 82), 47, 10)
             elif level == 3:
                 pygame.draw.circle(screen, (255, 255, 255), (856, 83), 47, 10)
+
+        elif open_1 == 2:
+            load = loading.get_rect(
+                topleft=(0, 0))
+            screen.fill('white')
+            screen.blit(loading, load)
+            fsс = pygame.font.SysFont('serif', 48)
+            loading_txt = fsс.render("Loading...", True, (255, 0, 0))
+            screen_loading.blit(loading_txt, (500, 550))
+            clock.tick(t)
         pygame.display.flip()
     pygame.quit()
