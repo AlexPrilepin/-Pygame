@@ -14,6 +14,7 @@ else:
 w.close()
 
 obs = pygame.image.load('obstacle.png')
+titry = pygame.image.load('titry.png')
 goblin_l = pygame.image.load('skeletone_l.png')
 obs.set_colorkey((255, 255, 255))
 goblin_l.set_colorkey((255, 255, 255))
@@ -702,6 +703,8 @@ if hero.hp == 0:
 elif hero_2.hp == 0:
     hero_2.hp = 1
 while running:
+    if boss.hp <= 0:
+        running = False
     if hero.cd > 0:
         hero.cd -= 1
     if hero_2.cd > 0:
@@ -720,7 +723,7 @@ while running:
             screen.blit(pol, g_l_r)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            pygame.quit()
         if not (GG_1 and GG_2):
             if event.type == pygame.MOUSEMOTION:
                 if not aim:
@@ -985,6 +988,7 @@ while running:
         
     clock.tick(fps)
     pygame.display.flip()
+
 try:
     with open("earning.txt", 'w'):
         pass
@@ -996,4 +1000,20 @@ w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
 w.close()
 
-pygame.quit()
+runner = True
+
+while runner:
+    screen.fill((0, 0, 0))
+    g_l_r = titry.get_rect(
+        topleft=(0, 0))
+    screen.blit(titry, g_l_r)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONUP:
+            s_x, s_y = event.pos
+            if int(s_x) in list(range(250, 850)) and int(s_y) in list(range(590, 790)):
+                runner = False
+    pygame.display.flip()
+    
+import main
