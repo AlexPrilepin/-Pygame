@@ -2,15 +2,15 @@ import pygame
 from random import choice, randint
 from math import sqrt, asin, pi, sin, cos
 
-
-try:
-    with open("info.txt", 'w'):
-        pass
-except IOError:
-    pass
+f1 = open('info.txt').read().split('\n')
+lvl = int(f1[0])
+sasound = int(f1[1])
 w = open("info.txt", 'w')
 w.write(str(5) + '\n')
-w.write(str(0) + '\n')
+if sasound == 0:
+    w.write(str(0) + '\n')
+else:
+    w.write(str(1) + '\n')
 w.close()
 
 obs = pygame.image.load('obstacle.png')
@@ -683,7 +683,9 @@ waves = 3
 freeze_waves = 0
 win = 0
 GG_1, GG_2 = False, False
-pygame.mixer.music.load('grobik.mp3')
+if sasound:
+    pygame.mixer.music.load('boss_music.mp3')
+    pygame.mixer.music.play()
 ccc = 0
 hero_2.cd = cd = 0
 h1_ab = 60
@@ -795,23 +797,6 @@ while running:
                         else:
                             t = n.render('Not enough coins!', True, (255, 0, 0))
                             screen.blit(t, (300, 550))
-##    if len(npc) == 0 and waves_count < waves and room == 2:
-##        if freeze_waves >= 90:
-##            npc = []
-##            for i in range(choice(list(range(3 + waves_count * 2, 10 + waves_count)))):
-##                x_pos, y_pos = randint(50, 1100), randint(50, 700)
-##                ball = Goblin(x_pos, y_pos)
-##                npc.append(ball)
-##            waves_count += 1
-##            writing = False
-##        else:
-##            freeze_waves += 1
-##            writing = True
-##            npc_shoot = 1
-##            
-##    elif room == 2:
-##        freeze_waves = 0
-##        writing = False
 
     
     g_l_r = wall_hor.get_rect(
@@ -930,7 +915,9 @@ while running:
         t = n.render(f'YOU LOSE !!!', True, (255, 50, 50))
         screen.blit(t, (80, 300))
         if ccc == 0:
-            pygame.mixer.music.play()
+            if sasound:
+                pygame.mixer.music.load('grobik.mp3')
+                pygame.mixer.music.play()
             ccc += 1
     if GG_1:
         hero.typer_l, hero.typer_r = hc, hc
@@ -1007,17 +994,6 @@ w = open("earning.txt", 'w')
 w.write(str(hero.hp) + '\n')
 w.write(str(hero_2.hp) + '\n')
 w.write(str(coins) + '\n')
-w.close()
-
-
-try:
-    with open("info.txt", 'w'):
-        pass
-except IOError:
-    pass
-w = open("info.txt", 'w')
-w.write(str(5) + '\n')
-w.write(str(0) + '\n')
 w.close()
 
 pygame.quit()

@@ -84,6 +84,14 @@ if __name__ == '__main__':
         if b == 15:
             f1 = open('info.txt').read().split('\n')
             lvl = int(f1[0])
+            sasound = int(f1[1])
+            w = open("info.txt", 'w')
+            w.write(str(lvl) + '\n')
+            if sound1 == 0:
+                w.write(str(0) + '\n')
+            else:
+                w.write(str(1) + '\n')
+            w.close()
             if lvl == 1:
                 import pygraph
             elif lvl == 2:
@@ -97,6 +105,15 @@ if __name__ == '__main__':
         if c > 0:
             c += 1
         if c == 15:
+            f1 = open('info.txt').read().split('\n')
+            lvl = int(f1[0])
+            w = open("info.txt", 'w')
+            w.write(str(lvl) + '\n')
+            if sound1 == 0:
+                w.write(str(0) + '\n')
+            else:
+                w.write(str(1) + '\n')
+            w.close()
             import pygraph
         x_pos, y_pos = -1, -1
         if reload > 0:
