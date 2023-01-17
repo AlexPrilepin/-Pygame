@@ -1,13 +1,13 @@
 import pygame
 from random import choice, randint
 
-hp_boost_pic = pygame.image.load('images/upgrade_hp.png')
-speed_boost_pic = pygame.image.load('images/speed_boost.png')
-damage_boost_pic = pygame.image.load('images/upgrade_damage.png')
-portal = pygame.image.load('images/portal_for_menu.png')
-coin = pygame.image.load('images/coin.png')
+hp_boost_pic = pygame.image.load('upgrade_hp.png')
+speed_boost_pic = pygame.image.load('speed_boost.png')
+damage_boost_pic = pygame.image.load('upgrade_damage.png')
+portal = pygame.image.load('portal_for_menu.png')
+coin = pygame.image.load('coin.png')
 coin.set_colorkey((255, 255, 255))
-small_coin = pygame.image.load('images/small_coin.png')
+small_coin = pygame.image.load('small_coin.png')
 coin.set_colorkey((255, 255, 255))
 
 
