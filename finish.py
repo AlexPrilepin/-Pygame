@@ -32,6 +32,6 @@ if __name__ == '__main__':
         if event.type == pygame.MOUSEBUTTONUP:
             x_pos, y_pos = event.pos
             if x_pos in list(range(width // 2 + 160, width // 2 + 530)) and y_pos in list(range(470, 640)):
-                print('Menu')
+                running =False
         pygame.display.flip()
-    pygame.quit()
+import main

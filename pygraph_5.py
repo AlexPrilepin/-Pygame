@@ -1016,4 +1016,4 @@ while runner:
                 runner = False
     pygame.display.flip()
     
-import main
+import finish
