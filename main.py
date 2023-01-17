@@ -1,33 +1,33 @@
 import pygame
 pygame.font.init()
 
-fon = pygame.image.load('Fon.png')
+fon = pygame.image.load('images/Fon.png')
 fon.set_colorkey((255, 255, 255))
-ns = pygame.image.load('ns.png')
+ns = pygame.image.load('images/ns.png')
 ns.set_colorkey((255, 255, 255))
-shes = pygame.image.load('shes.png')
+shes = pygame.image.load('images/shes.png')
 shes.set_colorkey((255, 255, 255))
-learn = pygame.image.load('learn.png')
+learn = pygame.image.load('images/learn.png')
 learn.set_colorkey((255, 255, 255))
-play_1 = pygame.image.load('play_1.png')
+play_1 = pygame.image.load('images/play_1.png')
 play_1.set_colorkey((255, 255, 255))
-play_2 = pygame.image.load('play_2.png')
+play_2 = pygame.image.load('images/play_2.png')
 play_2.set_colorkey((255, 255, 255))
-play_3 = pygame.image.load('play_3.png')
+play_3 = pygame.image.load('images/play_3.png')
 play_3.set_colorkey((255, 255, 255))
-play_4 = pygame.image.load('play_4.png')
+play_4 = pygame.image.load('images/play_4.png')
 play_4.set_colorkey((255, 255, 255))
-play_5 = pygame.image.load('play_5.png')
+play_5 = pygame.image.load('images/play_5.png')
 play_5.set_colorkey((255, 255, 255))
-fon_shes = pygame.image.load('Fonshes.png')
+fon_shes = pygame.image.load('images/Fonshes.png')
 fon_shes.set_colorkey((255, 255, 255))
-sound_on = pygame.image.load('sound_on.png')
+sound_on = pygame.image.load('images/sound_on.png')
 sound_on.set_colorkey((255, 255, 255))
-sound_off = pygame.image.load('sound_off.png')
+sound_off = pygame.image.load('images/sound_off.png')
 sound_off.set_colorkey((255, 255, 255))
-menu = pygame.image.load('Menu.png')
+menu = pygame.image.load('images/Menu.png')
 menu.set_colorkey((255, 255, 255))
-loading = pygame.image.load('Loading.png')
+loading = pygame.image.load('images/Loading.png')
 loading.set_colorkey((255, 255, 255))
 
 level = 1
@@ -173,6 +173,7 @@ while running:
             if x_pos in list(range(width // 2 - 520, width // 2 - 200)) and y_pos in list(range(400, 600)):
                 print('3')
                 draw = 45
+                import training2
             if x_pos in list(range(width // 2 + 190, width // 2 + 520)) and y_pos in list(range(400, 600)):
                 print('4')
                 open_1 = 2
@@ -193,7 +194,6 @@ while running:
         fss = pygame.font.SysFont('serif', 48)
         sound = fss.render("Звук:", True, (0, 0, 0))
         screen_shes.blit(sound, (275, 500))
-        pygame.draw.rect(screen, (200, 253, 203), (width // 2 - 200, 400, 1000, 1000))
         o_w_menu = menu.get_rect(
             topleft=(width // 2 + 230, 500))
         screen.blit(menu, o_w_menu)

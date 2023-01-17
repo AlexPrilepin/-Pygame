@@ -1,7 +1,7 @@
 import pygame
 pygame.font.init()
 
-fon_f = pygame.image.load('Fon_finish.png')
+fon_f = pygame.image.load('images/Fon_finish.png')
 fon_f.set_colorkey((255, 255, 255))
 
 if __name__ == '__main__':
